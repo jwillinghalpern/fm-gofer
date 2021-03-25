@@ -1,4 +1,4 @@
-import FMPromise from '../src/fm-promise';
+const { FMPromise } = require('../src/index');
 const assert = require('chai').assert;
 const fm = new FMPromise();
 

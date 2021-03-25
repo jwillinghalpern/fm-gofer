@@ -2,16 +2,17 @@
   "name": "fm-promise",
   "version": "1.0.0",
   "description": "framework for calling FileMaker scripts from a webviewer and retrieving results using callback promises.",
-  "main": "fm-promise.js",
+  "main": "./dist/main.js",
   "scripts": {
     "test": "mocha --require esm",
-    "build": "babel src -d dist"
+    "build": "webpack"
   },
   "author": "Josh Willing <josh@willingapps.com>",
   "license": "ISC",
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "babel-loader": "^8.2.2",
     "chai": "^4.3.4",
     "eslint": "^7.22.0",
     "eslint-config-node": "^4.1.0",
@@ -20,6 +21,8 @@
     "eslint-plugin-prettier": "^3.3.1",
     "esm": "^3.2.25",
     "mocha": "^8.3.2",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "webpack": "^5.28.0",
+    "webpack-cli": "^4.5.0"
   }
 }
