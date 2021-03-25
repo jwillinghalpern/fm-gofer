@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Run filemaker scripts and get responses from them
  *
