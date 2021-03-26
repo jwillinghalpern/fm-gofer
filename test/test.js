@@ -1,5 +1,5 @@
-const { FMGofer } = require('../src/index');
-const assert = require('chai').assert;
+import FMGofer from '../src/index';
+import { assert } from 'chai';
 const fm = new FMGofer();
 
 describe('createCallback', () => {

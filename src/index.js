@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * Run filemaker scripts and get responses from them
  *
@@ -123,4 +121,4 @@ class FMGofer {
   }
 }
 
-module.exports.FMGofer = FMGofer;
+export default FMGofer;
