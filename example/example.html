@@ -50,12 +50,10 @@
       (function () {
         var fm = new FMPromise();
         // TODO: I'd prefer an easier way to expose this function on the window
-        // I'd like something like the following, but webpack seems to condense
-        //   the function arguments to something like this: fm.runCallback(e)
-        //   preferred: window.fmRunCallback = fm.runCallback;
-        window.fmRunCallback = function(id, resolveOrReject, data) {
-          return fm.runCallback(id, resolveOrReject, data);
-        }
+        //   e.g.: window.fmRunCallback = fm.runCallback;
+        window.fmRunCallback = function () {
+					return fm.runCallback(...arguments);
+				};
         
         function handleClick() {
           var script = 'FM Script';
