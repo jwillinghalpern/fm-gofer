@@ -69,7 +69,7 @@ class FMPromise {
    * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
    *
    * @param {string} script name of script
-   * @param {object} [param={}] object to pass to FileMaker
+   * @param {any} [data=null] data you wish to send to fm. It will be nested in the `data` property of the script parameter
    * @param {number} [option=0] FM script option between 0 and 5
    * @param {number} [timeout=1000] timeout in ms. 0 will wait indefinitely.
    * @param {string} timeoutMessage custom message if the call times out.
@@ -78,28 +78,25 @@ class FMPromise {
    */
   performScriptWithOption(
     script,
-    param = {},
+    data = null,
     option = 0,
     timeout = 1000,
     timeoutMessage
   ) {
     return new Promise((resolve, reject) => {
-      param.callbackID = this.createCallback(
+      const callbackID = this.createCallback(
         resolve,
         reject,
         timeout,
         timeoutMessage
       );
+      const scriptParam = JSON.stringify({ callbackID, data });
       // I stole this little chunk of code from https://github.com/stephancasas/onfmready.js/blob/b2cfeca40553b407a8c07f6eedf5dabcc1c48148/onfmready.js#L9
       // It waits for the FileMaker object to appear on the window before attempting to use it.
       const interval = setInterval(() => {
         if (typeof FileMaker === 'object') {
           clearInterval(interval);
-          window.FileMaker.PerformScriptWithOption(
-            script,
-            JSON.stringify(param),
-            option
-          );
+          window.FileMaker.PerformScriptWithOption(script, scriptParam, option);
         }
       }, 5);
     });
@@ -109,16 +106,16 @@ class FMPromise {
    * Perform a FileMaker Script. FM can return a result by resolving or rejecting
    *
    * @param {string} script name of script
-   * @param {object} [param={}] object to pass to FileMaker
+   * @param {any} data you wish to send to fm. It will be nested in the `data` property of the script parameter
    * @param {number} [timeout=1000] timeout in ms. 0 will wait indefinitely.
    * @param {string} timeoutMessage custom message if the call times out.
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
    */
-  performScript(script, param, timeout, timeoutMessage) {
+  performScript(script, data, timeout, timeoutMessage) {
     return this.performScriptWithOption(
       script,
-      param,
+      data,
       null,
       timeout,
       timeoutMessage
