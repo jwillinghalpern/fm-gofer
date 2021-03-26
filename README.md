@@ -15,8 +15,8 @@ Check out `./example/FMPromise.fmp12`. You can find the html code in `./example/
 2. Create an instance of FMPromise in your code and attach the `runCallback` method to the window so FileMaker can call it using `Perform JavaScript in WebViewer`:
     ```
     var fm = new FMPromise();
-    window.fmRunCallback = function(id, resolveOrReject, data) {
-    	return fm.runCallback(id, resolveOrReject, data);
+    window.fmRunCallback = function() {
+    	return fm.runCallback(...arguments);
     }
     ```
 3. Run FileMaker scripts from the JS like this:
