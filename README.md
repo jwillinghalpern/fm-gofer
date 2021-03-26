@@ -1,6 +1,6 @@
-# fm-promise
+# fm-gofer (formerly fm-promise)
 
-A framework for calling FileMaker scripts from JavaScript in web viewers and getting a response back via callbacks.
+A framework for calling FileMaker scripts from JavaScript in web viewers and getting a response back via callbacks. Gofer... as in gofer this, gofer that.
 
 ## Try it out
 
