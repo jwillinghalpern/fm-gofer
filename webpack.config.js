@@ -1,6 +1,8 @@
 const path = require('path');
 const distPath = path.resolve(__dirname, 'dist');
 const mode = 'production';
+const filname = 'fm-gofer';
+const name = 'FMGofer';
 
 const moduleRules = {
   rules: [
@@ -18,11 +20,11 @@ module.exports = [
   {
     output: {
       path: distPath,
-      filename: 'main-umd.js',
+      filename: `${filname}.umd.js`,
       library: {
-        name: 'FMPromise',
+        name: name,
         type: 'umd',
-        export: 'FMPromise',
+        export: 'FMGofer',
         umdNamedDefine: true,
       },
     },
@@ -33,11 +35,11 @@ module.exports = [
   {
     output: {
       path: distPath,
-      filename: 'main-cjs.js',
+      filename: `${filname}.cjs.js`,
       library: {
-        name: 'FMPromise',
+        name: name,
         type: 'commonjs',
-        export: 'FMPromise',
+        export: 'FMGofer',
       },
     },
     module: moduleRules,

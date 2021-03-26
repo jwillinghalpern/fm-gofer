@@ -1,10 +1,10 @@
-# fm-gofer (formerly fm-promise)
+# fm-gofer
 
 A framework for calling FileMaker scripts from JavaScript in web viewers and getting a response back via callbacks. Gofer... as in gofer this, gofer that.
 
-## Try it out
+## Gofer it
 
-Check out `./example/FMPromise.fmp12`. You can find the html code in `./example/example.html. This example demostrates the callback, resolve, reject, and timeout capabilities of the library.
+Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/example.html. This example demostrates the callback, resolve, reject, and timeout capabilities of the library.
 
 ## Usage
 
@@ -12,11 +12,11 @@ Check out `./example/FMPromise.fmp12`. You can find the html code in `./example/
     ```
     <script> THE UMD JS CODE HERE </script>
     ```
-2. Create an instance of FMPromise in your code and attach the `runCallback` method to the window so FileMaker can call it using `Perform JavaScript in WebViewer`:
+2. Create an instance of FMGofer in your code and attach the `runCallback` method to the window so FileMaker can call it using `Perform JavaScript in WebViewer`:
     ```
-    var fm = new FMPromise();
+    var fm = new FMGofer();
     window.fmRunCallback = function() {
-    	return fm.runCallback(...arguments);
+      return fm.runCallback(...arguments);
     }
     ```
 3. Run FileMaker scripts from the JS like this:
@@ -25,7 +25,7 @@ Check out `./example/FMPromise.fmp12`. You can find the html code in `./example/
     ```
 4. To send data back to JS, extract the callbackID from the fm script param, and use it to call the correct JS callback. Remember to tell JS whether to "resolve" or "reject":
     ```
-    Perform JavaScript in WebViewer [ fmRunCallback ( $callbackID ; "resolve" ; $dataToReturn )]
+    Perform JavaScript in WebViewer [ "fmRunCallback" ( $callbackID ; "resolve" ; $dataToReturn )]
     ```
 
 ## Build

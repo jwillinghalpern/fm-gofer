@@ -1,8 +1,8 @@
 {
-  "name": "fm-promise",
+  "name": "fm-gofer",
   "version": "1.0.0",
-  "description": "framework for calling FileMaker scripts from a webviewer and retrieving results using callback promises.",
-  "main": "./dist/main.js",
+  "description": "Framework for calling FileMaker scripts from a webviewer and retrieving results using callback promises.",
+  "main": "./dist/fm-gofer-cjs.js",
   "scripts": {
     "test": "mocha --require esm",
     "build": "webpack"

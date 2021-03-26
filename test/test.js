@@ -1,6 +1,6 @@
-const { FMPromise } = require('../src/index');
+const { FMGofer } = require('../src/index');
 const assert = require('chai').assert;
-const fm = new FMPromise();
+const fm = new FMGofer();
 
 describe('createCallback', () => {
   it('should return an integer callback id', () => {

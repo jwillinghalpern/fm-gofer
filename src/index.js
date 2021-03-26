@@ -6,7 +6,7 @@
  * @export
  * @class FM
  */
-class FMPromise {
+class FMGofer {
   constructor() {
     this.callbacks = {};
     this.nextID = 0;
@@ -123,4 +123,4 @@ class FMPromise {
   }
 }
 
-module.exports.FMPromise = FMPromise;
+module.exports.FMGofer = FMGofer;
