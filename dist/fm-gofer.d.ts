@@ -3,8 +3,8 @@
  */
 declare class FM {
     /**
-     * Call to resolve a saved callback promise.
-     * @param id - callback id
+     * Resolve or reject a saved callback promise.
+     * @param id - promise id
      * @param [resolveOrReject = 'resolve'] - 'resolve' or 'reject'
      * @param [data = null] - any data you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
      */
