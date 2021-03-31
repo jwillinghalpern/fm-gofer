@@ -24,8 +24,8 @@ class FMGofer {
   setCallbackName(callbackName = 'fmCallback') {
     if (typeof callbackName !== 'string' || !callbackName)
       throw new Error('callbackName must be a non-empty string');
-    window[callbackName] = (promiseID, resolveOrReject, data) => {
-      this.runCallback(promiseID, resolveOrReject, data);
+    window[callbackName] = (promiseID, resolveOrReject, parameter) => {
+      this.runCallback(promiseID, resolveOrReject, parameter);
     };
     this.callbackName = callbackName;
   }
@@ -68,15 +68,15 @@ class FMGofer {
    *
    * @param {number} id promise id
    * @param {string} [resolveOrReject='resolve'] 'resolve' or 'reject'
-   * @param {string} [data=null] any data you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
+   * @param {string} [parameter=null] any parameter you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
    * @memberof FM
    */
-  runCallback(id, resolveOrReject = 'resolve', data = null) {
+  runCallback(id, resolveOrReject = 'resolve', parameter = null) {
     try {
       const promise = this.getPromise(id);
       if (promise.timeoutID) clearTimeout(promise.timeoutID);
-      if (resolveOrReject.toLowerCase() === 'reject') promise.reject(data);
-      else promise.resolve(data);
+      if (resolveOrReject.toLowerCase() === 'reject') promise.reject(parameter);
+      else promise.resolve(parameter);
       this.deletePromise(id);
     } catch (error) {
       console.error(error);
@@ -88,16 +88,16 @@ class FMGofer {
    * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
    *
    * @param {string} script name of script
-   * @param {any} [data=null] data you wish to send to fm. It will be nested in the `data` property of the script parameter
+   * @param {any} [parameter=null] parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
    * @param {number} [option=0] FM script option between 0 and 5
    * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
    * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
    */
-  performScriptWithOption(
+  PerformScriptWithOption(
     script,
-    data = null,
+    parameter = null,
     option = 0,
     timeout = 3000,
     timeoutMessage = 'The FM script call timed out'
@@ -112,7 +112,7 @@ class FMGofer {
       const param = JSON.stringify({
         promiseID,
         callbackName: this.callbackName,
-        data,
+        parameter,
       });
 
       let intervalID;
@@ -141,22 +141,22 @@ class FMGofer {
    * Perform a FileMaker Script. FM can return a result by resolving or rejecting
    *
    * @param {string} script name of script
-   * @param {any} data you wish to send to fm. It will be nested in the `data` property of the script parameter
+   * @param {any} parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
    * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
    * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
    */
-  performScript(
+  PerformScript(
     script,
-    data = null,
+    parameter = null,
     timeout = 3000,
     timeoutMessage = 'The FM script call timed out'
   ) {
     const option = null;
-    return this.performScriptWithOption(
+    return this.PerformScriptWithOption(
       script,
-      data,
+      parameter,
       option,
       timeout,
       timeoutMessage
