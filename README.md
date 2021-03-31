@@ -18,9 +18,9 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
 
     ```javascript
     var fm = new FMGofer();
-    window.fmRunCallback = function() {
-      return fm.runCallback(...arguments);
-    }
+    fm.setCallbackName();
+    // The above uses the default callback name 'fmCallback'. For a custom name:
+    // fm.setCallbackName('myCustomCallback');
     ```
 
 3. Run FileMaker scripts from the JS like this:
@@ -29,10 +29,12 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
     fm.performScript('Your FM Script', param, timeout, timeoutMessage);
     ```
 
-4. To send data back to JS, extract the callbackID from the fm script param, and use it to call the correct JS callback. Remember to tell JS whether to "resolve" or "reject":
+4. To send data back to JS, extract the callbackName and promiseID from the fm script param, and use it to call the correct JS callback and promise. Remember to tell JS whether to "resolve" or "reject":
 
     ```filemaker
-    Perform JavaScript in WebViewer [ "fmRunCallback" ( $callbackID ; "resolve" ; $dataToReturn )]
+    Set Variable [ $promiseID ; JSONGetElement ( Get ( ScriptParameter ) ; "promiseID" ) ]
+    Set Variable [ $callbackName ; JSONGetElement ( Get ( ScriptParameter ) ; "callbackName" ) ]
+    Perform JavaScript in WebViewer [ Object Name: "myWebviewer" ; Function Name: $callbackName ; Parameters: $promiseID, "resolve", <YOUR RETURN DATA> ]
     ```
 
 ## Build
