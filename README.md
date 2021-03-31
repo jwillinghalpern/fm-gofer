@@ -8,10 +8,15 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
 
 ## Usage
 
-1. Reference ./dist/main-umd.js in an html script tag or copy into your inline javascript in your webviewer html:
+1. Reference ./dist/fm-gofer.js in an html script tag or copy into your inline javascript in your webviewer html:
 
     ```html
     <script> THE UMD JS CODE HERE </script>
+    ```
+
+    ```javascript
+    // or use require() in javascript:
+    const FMGofer = require('fm-gofer');
     ```
 
 2. Create an instance of FMGofer in your code and attach the `runCallback` method to the window so FileMaker can call it using `Perform JavaScript in WebViewer`:
