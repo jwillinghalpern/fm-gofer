@@ -49,7 +49,6 @@ class FMGofer {
    * @param {number} id callback id
    * @param {string} [resolveOrReject='resolve'] 'resolve' or 'reject'
    * @param {string} [data=null] any data you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
-   * @private
    * @memberof FM
    */
   runCallback(id, resolveOrReject = 'resolve', data = null) {
@@ -71,7 +70,7 @@ class FMGofer {
    * @param {string} script name of script
    * @param {any} [data=null] data you wish to send to fm. It will be nested in the `data` property of the script parameter
    * @param {number} [option=0] FM script option between 0 and 5
-   * @param {number} [timeout=1000] timeout in ms. 0 will wait indefinitely.
+   * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
    * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
@@ -80,7 +79,7 @@ class FMGofer {
     script,
     data = null,
     option = 0,
-    timeout = 1000,
+    timeout = 3000,
     timeoutMessage = 'The FM script call timed out'
   ) {
     return new Promise((resolve, reject) => {
@@ -90,15 +89,27 @@ class FMGofer {
         timeout,
         timeoutMessage
       );
-      const scriptParam = JSON.stringify({ callbackID, data });
-      // I stole this little chunk of code from https://github.com/stephancasas/onfmready.js/blob/b2cfeca40553b407a8c07f6eedf5dabcc1c48148/onfmready.js#L9
-      // It waits for the FileMaker object to appear on the window before attempting to use it.
-      const interval = setInterval(() => {
-        if (typeof FileMaker === 'object') {
-          clearInterval(interval);
-          window.FileMaker.PerformScriptWithOption(script, scriptParam, option);
-        }
-      }, 5);
+      const param = JSON.stringify({ callbackID, data });
+
+      let intervalID;
+      let timeoutID;
+      try {
+        intervalID = setInterval(() => {
+          if (typeof window.FileMaker === 'object') {
+            clearTimeout(timeoutID);
+            clearInterval(intervalID);
+            window.FileMaker.PerformScriptWithOption(script, param, option);
+          }
+        }, 5);
+        timeoutID = setTimeout(() => {
+          clearInterval(intervalID);
+          throw new Error('window.FileMaker not found');
+        }, 2000);
+      } catch (error) {
+        clearInterval(intervalID);
+        clearTimeout(timeoutID);
+        throw error;
+      }
     });
   }
 
@@ -107,7 +118,7 @@ class FMGofer {
    *
    * @param {string} script name of script
    * @param {any} data you wish to send to fm. It will be nested in the `data` property of the script parameter
-   * @param {number} [timeout=1000] timeout in ms. 0 will wait indefinitely.
+   * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
    * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
@@ -115,7 +126,7 @@ class FMGofer {
   performScript(
     script,
     data = null,
-    timeout = 1000,
+    timeout = 3000,
     timeoutMessage = 'The FM script call timed out'
   ) {
     const option = null;
