@@ -19,13 +19,14 @@ class FMGofer {
    * @param {integer} timeout time in ms. 0 will wait indefinitely.
    * @param {string} timeoutMessage custom timeout message
    * @returns {number} the callback id
+   * @private
    * @memberof FM
    */
   createCallback(resolve, reject, timeout, timeoutMessage) {
     const callback = { resolve, reject };
     if (timeout !== 0) {
       callback.timeoutID = setTimeout(() => {
-        reject(timeoutMessage || 'The FM script call timed out');
+        reject(timeoutMessage);
       }, timeout);
     }
     const id = this.nextID;
@@ -48,6 +49,7 @@ class FMGofer {
    * @param {number} id callback id
    * @param {string} [resolveOrReject='resolve'] 'resolve' or 'reject'
    * @param {string} data any data you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
+   * @private
    * @memberof FM
    */
   runCallback(id, resolveOrReject = 'resolve', data) {
@@ -79,7 +81,7 @@ class FMGofer {
     data = null,
     option = 0,
     timeout = 1000,
-    timeoutMessage
+    timeoutMessage = 'The FM script call timed out'
   ) {
     return new Promise((resolve, reject) => {
       const callbackID = this.createCallback(
@@ -110,11 +112,17 @@ class FMGofer {
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
    */
-  performScript(script, data, timeout, timeoutMessage) {
+  performScript(
+    script,
+    data = null,
+    timeout = 1000,
+    timeoutMessage = 'The FM script call timed out'
+  ) {
+    const option = null;
     return this.performScriptWithOption(
       script,
       data,
-      null,
+      option,
       timeout,
       timeoutMessage
     );
