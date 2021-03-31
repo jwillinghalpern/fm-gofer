@@ -48,11 +48,11 @@ class FMGofer {
    *
    * @param {number} id callback id
    * @param {string} [resolveOrReject='resolve'] 'resolve' or 'reject'
-   * @param {string} data any data you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
+   * @param {string} [data=null] any data you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
    * @private
    * @memberof FM
    */
-  runCallback(id, resolveOrReject = 'resolve', data) {
+  runCallback(id, resolveOrReject = 'resolve', data = null) {
     try {
       const callback = this.getCallback(id);
       if (callback.timeoutID) clearTimeout(callback.timeoutID);
@@ -72,7 +72,7 @@ class FMGofer {
    * @param {any} [data=null] data you wish to send to fm. It will be nested in the `data` property of the script parameter
    * @param {number} [option=0] FM script option between 0 and 5
    * @param {number} [timeout=1000] timeout in ms. 0 will wait indefinitely.
-   * @param {string} timeoutMessage custom message if the call times out.
+   * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
    */
@@ -108,7 +108,7 @@ class FMGofer {
    * @param {string} script name of script
    * @param {any} data you wish to send to fm. It will be nested in the `data` property of the script parameter
    * @param {number} [timeout=1000] timeout in ms. 0 will wait indefinitely.
-   * @param {string} timeoutMessage custom message if the call times out.
+   * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
    * @returns a promise that FileMaker can resolve or reject
    * @memberof FM
    */
