@@ -26,7 +26,8 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
 3. Run FileMaker scripts from the JS like this:
 
     ```javascript
-    fm.performScript('Your FM Script', param, timeout, timeoutMessage);
+    fm.PerformScript('Your FM Script', param, timeout, timeoutMessage);
+    fm.PerformScriptWithOption('Your FM Script', param, option, timeout, timeoutMessage);
     ```
 
 4. To send data back to JS, extract the callbackName and promiseID from the fm script param, and use it to call the correct JS callback and promise. Remember to tell JS whether to "resolve" or "reject":
