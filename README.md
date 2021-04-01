@@ -14,28 +14,24 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
     <script> THE UMD JS CODE HERE </script>
     ```
 
+    or use require() in javascript:
+
     ```javascript
-    // or use require() in javascript:
     const FMGofer = require('fm-gofer');
     ```
 
-2. Create an instance of FMGofer in your code and attach the `runCallback` method to the window so FileMaker can call it using `Perform JavaScript in WebViewer`:
+2. Run FileMaker scripts from the JS like this:
 
     ```javascript
-    var fm = new FMGofer();
-    fm.setCallbackName();
-    // The above uses the default callback name 'fmCallback'. For a custom name:
-    // fm.setCallbackName('myCustomCallback');
+    var a = await FMGofer.PerformScript('FM Script', param);
+    var b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
+
+    // Set a custom timeout/timeout message if the default 3000ms is too short
+    var c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
+    var d = await FMGofer.PerformScriptWithOption('FM Script', param, 5, 5000, 'timed out!');
     ```
 
-3. Run FileMaker scripts from the JS like this:
-
-    ```javascript
-    fm.PerformScript('Your FM Script', param, timeout, timeoutMessage);
-    fm.PerformScriptWithOption('Your FM Script', param, option, timeout, timeoutMessage);
-    ```
-
-4. To send data back to JS, extract the callbackName and promiseID from the fm script param, and use it to call the correct JS callback and promise. Remember to tell JS whether to "resolve" or "reject":
+3. To send data back to JS, extract the callbackName and promiseID from the fm script param, and use it to call the correct JS callback and promise. Remember to tell JS whether to "resolve" or "reject":
 
     ```filemaker
     Set Variable [ $promiseID ; JSONGetElement ( Get ( ScriptParameter ) ; "promiseID" ) ]
