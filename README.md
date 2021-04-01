@@ -36,6 +36,7 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
     ```filemaker
     Set Variable [ $promiseID ; JSONGetElement ( Get ( ScriptParameter ) ; "promiseID" ) ]
     Set Variable [ $callbackName ; JSONGetElement ( Get ( ScriptParameter ) ; "callbackName" ) ]
+    Set Variable [ $parameter ; JSONGetElement ( Get ( ScriptParameter ) ; "parameter" ) ]
     Perform JavaScript in WebViewer [ Object Name: "myWebviewer" ; Function Name: $callbackName ; Parameters: $promiseID, <YOUR RETURN DATA>, <True for reject> ]
     ```
 
