@@ -1,4 +1,5 @@
 const path = require('path');
+const mode = 'production';
 
 module.exports = [
   {
@@ -23,6 +24,21 @@ module.exports = [
         },
       ],
     },
-    mode: 'production',
+    mode: mode,
+  },
+  {
+    entry: path.resolve(__dirname, 'src/index.js'),
+    output: {
+      globalObject: 'this',
+      path: path.resolve(__dirname, 'dist'),
+      filename: 'fm-gofer.mjs',
+      library: {
+        type: 'module',
+      },
+    },
+    experiments: {
+      outputModule: true,
+    },
+    mode: mode,
   },
 ];
