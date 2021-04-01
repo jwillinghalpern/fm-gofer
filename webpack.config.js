@@ -11,7 +11,7 @@ module.exports = [
       library: {
         name: 'FMGofer',
         type: 'umd',
-        export: 'default',
+        // export: 'default',
         // umdNamedDefine: true,
       },
     },
