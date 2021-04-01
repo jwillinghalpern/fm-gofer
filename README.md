@@ -31,12 +31,12 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
     var d = await FMGofer.PerformScriptWithOption('FM Script', param, 5, 5000, 'timed out!');
     ```
 
-3. To send data back to JS, extract the callbackName and promiseID from the fm script param, and use it to call the correct JS callback and promise. Remember to tell JS whether to "resolve" or "reject":
+3. To send data back to JS, extract the callbackName and promiseID from the fm script param, and use it to call the correct JS callback and promise. Pass True as the last param to reject the promise
 
     ```filemaker
     Set Variable [ $promiseID ; JSONGetElement ( Get ( ScriptParameter ) ; "promiseID" ) ]
     Set Variable [ $callbackName ; JSONGetElement ( Get ( ScriptParameter ) ; "callbackName" ) ]
-    Perform JavaScript in WebViewer [ Object Name: "myWebviewer" ; Function Name: $callbackName ; Parameters: $promiseID, "resolve", <YOUR RETURN DATA> ]
+    Perform JavaScript in WebViewer [ Object Name: "myWebviewer" ; Function Name: $callbackName ; Parameters: $promiseID, <YOUR RETURN DATA>, <True for reject> ]
     ```
 
 ## Build
