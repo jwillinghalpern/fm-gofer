@@ -58,13 +58,14 @@ const deletePromise = (id) => delete window.fmGofer.promises[id];
 /**
  * Resolve or reject a saved callback promise.
  *
- * @param {number} id promise id
+ * @param {string} id promise id
  * @param {string} [parameter=null] any parameter you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
- * @param {boolean} [failed=false] set to true to reject the promise
+ * @param {string} [failed=''] A truthy or falsey string. We treat '0' as falsey. Pass in a truthy string to reject the promise.
  * @private
  */
-const runCallback = (id, parameter = null, failed = false) => {
+const runCallback = (id, parameter = null, failed = '') => {
   try {
+    if (failed === '0') failed = false;
     const promise = getPromise(id);
     if (promise.timeoutID) clearTimeout(promise.timeoutID);
     if (failed) promise.reject(parameter);
