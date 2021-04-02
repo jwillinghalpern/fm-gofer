@@ -4,11 +4,11 @@ A framework for calling FileMaker scripts from JavaScript in web viewers and get
 
 ## Gofer it
 
-Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/example.html. This example demostrates the callback, resolve, reject, and timeout capabilities of the library.
+Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/example.html`. This example demostrates the callback, resolve, reject, and timeout capabilities of the library.
 
 ## Usage
 
-1. Reference ./dist/fm-gofer.js in an html script tag or copy into your inline javascript in your webviewer html:
+1. Reference `./dist/fm-gofer.js` in an html script tag or copy into your inline javascript in your webviewer html:
 
     ```html
     <script> THE UMD JS CODE HERE </script>
@@ -42,7 +42,9 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
 
 ## Build
 
-to build run `npm run build`
+```bash
+npm run build
+```
 
 ## Contribute
 
