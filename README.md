@@ -40,6 +40,12 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
     Perform JavaScript in WebViewer [ Object Name: "myWebviewer" ; Function Name: $callbackName ; Parameters: $promiseID, <YOUR RETURN DATA>, <True for reject> ]
     ```
 
+## TEST
+
+```bash
+npm test
+```
+
 ## Build
 
 ```bash
