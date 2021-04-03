@@ -15,7 +15,11 @@ const fmGoferUUID = () => {
 };
 
 const fmGoferExists = () => {
-  return typeof window.fmGofer === 'object' && window.fmGofer !== null;
+  return (
+    typeof window.fmGofer === 'object' &&
+    window.fmGofer !== null &&
+    !Array.isArray(window.fmGofer)
+  );
 };
 
 const getCallbackName = () => {
@@ -88,7 +92,7 @@ const setCallbackName = (
 ) => {
   if (typeof callbackName !== 'string' || !callbackName)
     throw new Error('callbackName must be a non-empty string');
-  if (!fmGoferExists) initializeGofer();
+  if (!fmGoferExists()) initializeGofer();
   window[callbackName] = runCallback;
   window.fmGofer.callbackName = callbackName;
 };
