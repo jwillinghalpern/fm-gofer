@@ -43,7 +43,7 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
 ## TEST
 
 ```bash
-npm run test:coverage
+npm test
 ```
 
 ## Build

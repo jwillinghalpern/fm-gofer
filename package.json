@@ -5,8 +5,7 @@
   "main": "dist/fm-gofer.js",
   "module": "dist/fm-gofer.mjs",
   "scripts": {
-    "test": "cross-env NODE_ENV=test mocha --require esm",
-    "test:coverage": "cross-env NODE_ENV=test nyc mocha",
+    "test": "cross-env NODE_ENV=test nyc mocha",
     "build": "webpack",
     "jsdoc": "jsdoc -r src -t node_modules/tsd-jsdoc/dist -d dist --package package.json"
   },
