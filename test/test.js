@@ -1,22 +1,37 @@
 import { assert } from 'chai';
-import * as FMGofer from '../src/index';
+import { PerformScript, PerformScriptWithOption } from '../src/index';
+import { __get__, __set__ } from '../src/index';
 
 // I'm using babel-plugin-rewire, which automatically adds a default export
 // to FMGofer. The default export contains the rewire methods like __get__
 
-require('jsdom-global')();
-// console.log(FMGofer.default.__get__);
-const fmGoferExists = FMGofer.default.__get__('fmGoferExists');
-
-const getPromise = FMGofer.default.__get__('getPromise');
-const deletePromise = FMGofer.default.__get__('deletePromise');
-const runCallback = FMGofer.default.__get__('runCallback');
-const setCallbackName = FMGofer.default.__get__('setCallbackName');
+// Mock the window. jsdom-global works great but is slow. This is sufficient:
+global.window = {};
 
 const reset = () => delete window.fmGofer;
 
+describe('fmGoferExists', () => {
+  const fmGoferExists = __get__('fmGoferExists');
+  it('should return true if fmGofer is a non-null object', () => {
+    window.fmGofer = {};
+    assert.isTrue(fmGoferExists());
+  });
+  it('should return false if fmGofer is not an object', () => {
+    window.fmGofer = 'abc';
+    assert.isFalse(fmGoferExists(), 'string');
+    window.fmGofer = 123;
+    assert.isFalse(fmGoferExists(), 'number');
+    window.fmGofer = [1, 2, 3];
+    assert.isFalse(fmGoferExists(), 'array');
+    window.fmGofer = true;
+    assert.isFalse(fmGoferExists(), 'boolean');
+    window.fmGofer = null;
+    assert.isFalse(fmGoferExists());
+  });
+});
+
 describe('fmGoferUUID', () => {
-  const fmGoferUUID = FMGofer.default.__get__('fmGoferUUID');
+  const fmGoferUUID = __get__('fmGoferUUID');
   it('should return a string', () => {
     assert.isString(fmGoferUUID(), 'error getting fmGoferUUID');
   });
@@ -28,24 +43,28 @@ describe('fmGoferUUID', () => {
 });
 
 describe('getCallbackName', () => {
-  const getCallbackName = FMGofer.default.__get__('getCallbackName');
-  it('should return null if not initialized', () => {
-    reset();
-    assert.isNull(getCallbackName());
+  const getCallbackName = __get__('getCallbackName');
+  const fmGoferExists_original = __get__('fmGoferExists');
+  it('should return null if fmGofer does not exist', () => {
+    __set__('fmGoferExists', () => false);
+    assert.isNull(getCallbackName(), 'getCallbackName() should be null');
+    __set__('fmGoferExists', fmGoferExists_original);
+  });
+
+  it('should return name if fmGofer exists', () => {
+    window.fmGofer = { callbackName: 'abcdefghijklmnop' };
+    __set__('fmGoferExists', () => true);
+    assert.strictEqual(getCallbackName(), window.fmGofer.callbackName);
+    __set__('fmGoferExists', fmGoferExists_original);
   });
   it('should return undefined if window.fmGofer exists but not callbackName', () => {
     window.fmGofer = {};
     assert.isUndefined(getCallbackName(), 'should be undefined');
   });
-  it('should return the name if set', () => {
-    const expected = 'customCallback123';
-    window.fmGofer = { callbackName: expected };
-    assert.strictEqual(getCallbackName(), expected, '[should be defined]');
-  });
 });
 
 describe('initializeGofer', () => {
-  const initializeGofer = FMGofer.default.__get__('initializeGofer');
+  const initializeGofer = __get__('initializeGofer');
   reset();
   if (window.fmGofer) throw new Error('window.fmGofer should not exist');
   it('should create fmGofer on the window', () => {
@@ -65,9 +84,9 @@ describe('initializeGofer', () => {
 });
 
 describe('createPromise', () => {
-  const createPromise = FMGofer.default.__get__('createPromise');
+  const createPromise = __get__('createPromise');
   window.fmGofer = { promises: {}, callbackName: null };
-  const fn = () => console.log;
+  const fn = () => {};
   it('should return a string id', () => {
     assert.isString(createPromise(fn, fn), 'createPromise error');
   });
@@ -84,6 +103,14 @@ describe('createPromise', () => {
     const id = createPromise(fn, fn, 0);
     assert.doesNotHaveAllKeys(window.fmGofer.promises[id], ['timeoutID']);
   });
+  it('should return an fmGoferUUID', () => {
+    const fmGoferUUID_new = () => 'this is a mock uuid';
+    // save the original function so we can un-mock it later
+    const fmGoferUUID_original = __get__('fmGoferUUID');
+    __set__('fmGoferUUID', fmGoferUUID_new);
+    assert.strictEqual(createPromise(fn, fn), fmGoferUUID_new());
+    __set__('fmGoferUUID', fmGoferUUID_original);
+  }); // mock fmGoferUUID to return a string and see if it calls that and returns it.
   it('should call reject if timeout is surpassed');
   // it('should return an integer callback id', () => {
   //   const prom = new Promise((resolve, reject) => {
@@ -95,80 +122,120 @@ describe('createPromise', () => {
   // });
 });
 
-// // // I disabled these because the setInterval never resolves because FileMaker
-// // // never appears on the window. I'm not sure how to test this yet.
-// // describe('PerformScript', () => {
-// //   it('should return a promise', () => {
-// //     const res = FMGofer.PerformScript();
-// //     assert.strictEqual(res.then ? true : false, true, 'missing `then` method');
-// //   });
-// // });
+describe('getPromise', () => {
+  const getPromise = __get__('getPromise');
+  it('should get a stored promise at window.fmGofer.promises[id]', () => {
+    window.fmGofer = { promises: { 12345: 'abcde' } };
+    assert.strictEqual(getPromise('12345'), 'abcde');
+  });
+});
+describe('deletePromise', () => {
+  const deletePromise = __get__('deletePromise');
+  it('should delete a promise stored at window.fmGofer.promise[id]', () => {
+    window.fmGofer = { promises: { 12345: 'abcde' } };
+    deletePromise(12345);
+    assert.isUndefined(window.fmGofer.promises[12345]);
+  });
+  it('should return true', () => {
+    assert.isTrue(deletePromise(12345));
+  });
+});
 
-// // describe('PerformScriptWithOption', () => {
-// //   it('should return a promise', () => {
-// //     const res = FMGofer.PerformScript();
-// //     assert.strictEqual(res.then ? true : false, true, 'missing `then` method');
-// //   });
-// // });
+describe('setCallbackName', () => {
+  const setCallbackName = __get__('setCallbackName');
+  it('should change the name of the stored callback', () => {
+    const originalCallbackName = 'originalCallbackName';
+    window.fmGofer = { callbackName: 'originalCallbackName' };
+    setCallbackName('newCallbackname');
+    assert.notStrictEqual(window.fmGofer.callbackName, originalCallbackName);
+  });
+  it('should set a default callbackName', () => {
+    window.fmGofer = {};
+    setCallbackName();
+    assert.isString(window.fmGofer.callbackName);
+    assert.isNotNull(window.fmGofer.callbackName);
+    assert.notStrictEqual(window.fmGofer.callbackName, '');
+  });
+  it('should throw error if param not string', () => {
+    assert.throws(() => setCallbackName(123), Error);
+    assert.throws(() => setCallbackName({}), Error);
+    assert.throws(() => setCallbackName([]), Error);
+    assert.throws(() => setCallbackName(true), Error);
+    assert.throws(() => setCallbackName(null), Error);
+  });
+  it('should throw error for empty callbackName string', () => {
+    assert.throws(() => setCallbackName(''), Error);
+  });
+  it('should initialize fmGofer if !fmGoferExists()', () => {
+    const fmGoferExists_original = __get__('fmGoferExists');
+    const initializeGofer_original = __get__('initializeGofer');
+    __set__('fmGoferExists', () => false);
+    __set__('initializeGofer', () => (window.fmGofer = {}));
+    delete window.fmGofer;
+    setCallbackName();
+    assert.isObject(window.fmGofer);
+    __set__('fmGoferExists', fmGoferExists_original);
+    __set__('initializeGofer', initializeGofer_original);
+  });
+});
 
-// describe('getPromise', () => {
-//   const promiseID = FMGofer.createPromise(
-//     () => console.log('resolve'),
-//     () => console.log('rejecting'),
-//     0
-//   );
-//   it('should find a callback that has been created', () => {
-//     const promise = FMGofer.getPromise(promiseID);
-//     assert.exists(promise, 'promise should exist');
-//   });
-//   it('should return undefined for a promise id does not exist', () => {
-//     assert.notExists(
-//       FMGofer.getPromise(123),
-//       'this callback id should not exist'
-//     );
-//   });
-// });
+describe('runCallback', () => {
+  const runCallback = __get__('runCallback');
+  it('should transform failed from "0" to false');
+  it('shoud call getPromise()');
+  it(
+    'should throw if getPromise() throws. TODO: currently it shows an alert (should we mock alert?)'
+  );
+  it('should clear any timeoutID');
+  it('should call promise.reject if failed is truthy');
+  it('should call promise.resolve if failed is falsey');
+  it('should call deletePromise');
+});
 
-// describe('runCallback', () => {
-//   // TODO: this test is written wrong
-//   let result = '';
-//   const resolve = () => (result = 'resolved');
-//   const reject = () => (result = 'rejected');
-//   const timeout = 0;
-//   const timeoutMessage = 'custom message';
-//   it('should resolve a callback', () => {
-//     const id = FMGofer.createPromise(resolve, reject, timeout, timeoutMessage);
-//     FMGofer.runCallback(id, 'resolve');
-//     assert.strictEqual(result, 'resolved');
-//   });
+// I disabled these because the setInterval never resolves because FileMaker
+// never appears on the window. I'm not sure how to test this yet.
+describe('PerformScript', () => {
+  const scriptName = 'My Script';
+  const PerformScriptWithOption_original = __get__('PerformScriptWithOption');
+  const mockPSWO = () =>
+    __set__(
+      'PerformScriptWithOption',
+      (script, parameter, option, timeout, timeoutMessage) => ({
+        script,
+        parameter,
+        option,
+        timeout,
+        timeoutMessage,
+      })
+    );
+  const unmockPSWO = () =>
+    __set__('PerformScriptWithOption', PerformScriptWithOption_original);
 
-//   result = '';
-//   it('should reject a callback', () => {
-//     const id = FMGofer.createPromise(resolve, reject, timeout, timeoutMessage);
-//     FMGofer.runCallback(id, 'reject');
-//     assert.strictEqual(result, 'rejected');
-//   });
+  it('should set default params', () => {
+    mockPSWO();
+    const res = PerformScript(scriptName);
+    const keys = ['script', 'parameter', 'option', 'timeout', 'timeoutMessage'];
+    assert.hasAllKeys(res, keys);
+    assert.strictEqual(res.script, scriptName);
+    assert.isNull(res.parameter);
+    assert.isUndefined(res.option);
+    assert.strictEqual(res.timeout, 3000);
+    assert.isString(res.timeoutMessage);
+    unmockPSWO();
+  });
+  it('should pass params to PerformScriptWithOption', () => {
+    mockPSWO();
+    const res = PerformScript(scriptName, 'my param', 2468, 'my message');
+    const keys = ['script', 'parameter', 'option', 'timeout', 'timeoutMessage'];
+    assert.hasAllKeys(res, keys);
+    assert.strictEqual(res.script, scriptName);
+    assert.strictEqual(res.parameter, 'my param');
+    assert.isUndefined(res.option);
+    assert.strictEqual(res.timeout, 2468);
+    assert.strictEqual(res.timeoutMessage, 'my message');
+    unmockPSWO();
+  });
+  it('TODO: Empty script name. Throw error?');
+});
 
-//   // TODO: test to make sure that if the callback is called after the timeout, an error is not thrown.
-//   // I think Promises are supposed to ignore additional calls to resolve/reject, but that's not the behavior
-//   // that I'm getting
-//   result = '';
-//   it('should timeout if callback never called', () => {
-//     const timeout = 10;
-//     const id = FMGofer.createPromise(resolve, reject, timeout);
-//     setTimeout(() => {
-//       // FMGofer.runCallback(id, 'resolve');
-//       assert.strictEqual(result, 'rejected');
-//     }, 30);
-//   });
-
-//   result = '';
-//   it('should not timeout if callback called quick enough', () => {
-//     const timeout = 10;
-//     const id = FMGofer.createPromise(resolve, reject, timeout, timeoutMessage);
-//     setTimeout(() => {
-//       FMGofer.runCallback(id, 'resolve');
-//       assert.strictEqual(result, 'resolved');
-//     }, 5);
-//   });
-// });
+describe('PerformScriptWithOption', () => {});
