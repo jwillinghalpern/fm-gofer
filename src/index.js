@@ -115,6 +115,8 @@ export const PerformScriptWithOption = (
   timeout = 3000,
   timeoutMessage = 'The FM script call timed out'
 ) => {
+  if (typeof script !== 'string' || !script)
+    throw new Error('script must be a string');
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
   if (typeof timeoutMessage !== 'string')
     throw new Error('timeoutMessage must be a string');
