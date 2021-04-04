@@ -76,8 +76,8 @@ const runCallback = (id, parameter = null, failed = '') => {
     else promise.resolve(parameter);
     deletePromise(id);
   } catch (error) {
-    console.error(error);
-    alert(error);
+    window.console.error(error);
+    window.alert(error);
   }
 };
 
