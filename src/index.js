@@ -71,13 +71,15 @@ const runCallback = (id, parameter = null, failed = '') => {
   try {
     if (failed === '0') failed = false;
     const promise = getPromise(id);
+    if (typeof promise === 'undefined')
+      throw new Error(`No promise found for promiseID ${id}.`);
     if (promise.timeoutID) clearTimeout(promise.timeoutID);
     if (failed) promise.reject(parameter);
     else promise.resolve(parameter);
     deletePromise(id);
   } catch (error) {
-    window.console.error(error);
-    window.alert(error);
+    console.error(error);
+    alert(error);
   }
 };
 
@@ -97,6 +99,31 @@ const setCallbackName = (
   window.fmGofer.callbackName = callbackName;
 };
 
+const fmOnReady_PerformScriptWithOption = (script, param, option) => {
+  // first try calling synchronously
+  if (typeof window.FileMaker === 'object') {
+    window.FileMaker.PerformScriptWithOption(script, param, option);
+    return;
+  }
+  // then wait for FileMaker to appear before calling
+  let intervalID;
+  let timeoutID;
+  intervalID = setInterval(() => {
+    if (typeof window.FileMaker === 'object') {
+      clearTimeout(timeoutID);
+      clearInterval(intervalID);
+      window.FileMaker.PerformScriptWithOption(script, param, option);
+    }
+  }, 5);
+  timeoutID = setTimeout(() => {
+    clearInterval(intervalID);
+    throw new Error('window.FileMaker not found');
+  }, 2000);
+};
+
+const defaultTimeout = 3000;
+const defaultTimeoutMessage = 'The FM script call timed out';
+
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
  * @function
@@ -112,8 +139,8 @@ export const PerformScriptWithOption = (
   script,
   parameter = null,
   option = 0,
-  timeout = 3000,
-  timeoutMessage = 'The FM script call timed out'
+  timeout = defaultTimeout,
+  timeoutMessage = defaultTimeoutMessage
 ) => {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
@@ -125,32 +152,9 @@ export const PerformScriptWithOption = (
     if (!getCallbackName()) setCallbackName();
 
     const promiseID = createPromise(resolve, reject, timeout, timeoutMessage);
-    const param = JSON.stringify({
-      promiseID,
-      callbackName: getCallbackName(),
-      parameter,
-    });
-
-    // This part waits for FileMaker to appear on the window before calling
-    let intervalID;
-    let timeoutID;
-    try {
-      intervalID = setInterval(() => {
-        if (typeof window.FileMaker === 'object') {
-          clearTimeout(timeoutID);
-          clearInterval(intervalID);
-          window.FileMaker.PerformScriptWithOption(script, param, option);
-        }
-      }, 5);
-      timeoutID = setTimeout(() => {
-        clearInterval(intervalID);
-        throw new Error('window.FileMaker not found');
-      }, 2000);
-    } catch (error) {
-      clearInterval(intervalID);
-      clearTimeout(timeoutID);
-      throw error;
-    }
+    const callbackName = getCallbackName();
+    const param = JSON.stringify({ promiseID, callbackName, parameter });
+    fmOnReady_PerformScriptWithOption(script, param, option);
   });
 };
 
@@ -167,8 +171,8 @@ export const PerformScriptWithOption = (
 export const PerformScript = (
   script,
   parameter = null,
-  timeout = 3000,
-  timeoutMessage = 'The FM script call timed out'
+  timeout = defaultTimeout,
+  timeoutMessage = defaultTimeoutMessage
 ) => {
   const option = undefined;
   return PerformScriptWithOption(
