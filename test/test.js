@@ -239,6 +239,7 @@ describe('runCallback', () => {
     sinon.spy(clock, 'clearTimeout');
     runCallback(123);
     sinon.assert.calledWith(clock.clearTimeout, 234);
+    clock.restore();
   });
 
   it('should reject if failed is truthy', () => {
@@ -436,7 +437,7 @@ describe('fmOnReady_PerformScriptWithOption', () => {
     fn('test script', 'test param', 3);
     clock.tick(1000);
     window.FileMaker = { PerformScriptWithOption: spy };
-    // go forward 9ms so the interval script runs again (it runs every 5ms)
+    // go forward 9ms so the setInterval function runs again (it runs every 5ms)
     clock.tick(9);
     clock.restore();
     sinon.assert.calledOnce(spy);
@@ -450,7 +451,7 @@ describe('fmOnReady_PerformScriptWithOption', () => {
       fn('test script', 'test param', 3);
       clock.tick(2100);
       window.FileMaker = { PerformScriptWithOption: spy };
-      // go forward 9ms so the interval script runs again (it runs every 5ms)
+      // go forward 9ms so the setInterval function runs again (it runs every 5ms)
       clock.tick(9);
       clock.restore();
     };
