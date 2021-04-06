@@ -23,8 +23,6 @@ global.window = {};
 // const PSWOOriginal = __get__('PerformScriptWithOption');
 // const fmOnReady_PSWO = __get__('fmOnReady_PerformScriptWithOption');
 
-const reset = () => delete window.fmGofer;
-
 describe('--- UTILS ---', () => {
   describe('fmGoferUUID', () => {
     const fmGoferUUID = __get__('fmGoferUUID');
@@ -74,8 +72,10 @@ describe('--- FMGOFER WINDOW OBJECT ---', () => {
 
   describe('initializeGofer', () => {
     const initializeGofer = __get__('initializeGofer');
-    reset();
-    if (window.fmGofer) throw new Error('window.fmGofer should not exist');
+    beforeEach(() => {
+      delete window.fmGofer;
+      if (window.fmGofer) throw new Error('window.fmGofer should not exist');
+    });
 
     it('should create fmGofer on the window', () => {
       initializeGofer();
@@ -83,14 +83,12 @@ describe('--- FMGOFER WINDOW OBJECT ---', () => {
     });
 
     it('should return undefined', () => {
-      reset();
       assert.isUndefined(initializeGofer(), 'Error checking undefined');
     });
 
     it('window.fmGofer should be well-formed', () => {
-      reset();
-      initializeGofer();
       const requiredKeys = ['promises', 'callbackName'];
+      initializeGofer();
       assert.hasAllKeys(window.fmGofer, requiredKeys);
     });
   });
@@ -119,6 +117,7 @@ describe('--- CALLBACKS ---', () => {
       assert.isUndefined(getCallbackName(), 'should be undefined');
     });
   });
+
   describe('setCallbackName', () => {
     const setCallbackName = __get__('setCallbackName');
 
@@ -169,14 +168,13 @@ describe('--- CALLBACKS ---', () => {
     const deletePromise = __get__('deletePromise');
     const deletePromiseSpy = sinon.spy(deletePromise);
     const getPromise = __get__('getPromise');
-    const resetGofer = () => {
+    beforeEach(() => {
       window.fmGofer = { promises: { 123: { resolve, reject } } };
-    };
+    });
 
     it('should call getPromise()', () => {
       const getPromiseSpy = sinon.spy(getPromise);
       __set__('getPromise', getPromiseSpy);
-      resetGofer();
       runCallback(123);
       sinon.assert.calledWith(getPromiseSpy, 123);
       __set__('getPromise', getPromise);
@@ -185,14 +183,12 @@ describe('--- CALLBACKS ---', () => {
     it('should throw if getPromise() returns undefined', () => {
       sinon.stub(console, 'error');
       __set__('getPromise', sinon.fake.returns(undefined));
-      resetGofer();
       assert.throws(() => runCallback('non_existent_id'), Error);
       __set__('getPromise', getPromise);
       console.error.restore();
     });
 
     it('should clear timeout by timeoutID', () => {
-      resetGofer();
       window.fmGofer.promises[123].timeoutID = 234;
       var clock = sinon.useFakeTimers();
       sinon.spy(clock, 'clearTimeout');
@@ -202,28 +198,24 @@ describe('--- CALLBACKS ---', () => {
     });
 
     it('should reject if failed is truthy', () => {
-      resetGofer();
       const param = 'hello world';
       runCallback(123, param, '1');
       assert.isTrue(reject.calledOnceWith(param));
     });
 
     it('should resolve if failed is "0"', () => {
-      resetGofer();
       const param = 'hello world';
       runCallback(123, param, '0');
       assert.isTrue(reject.calledOnceWith(param));
     });
 
     it('should resolve if failed is empty string', () => {
-      resetGofer();
       const param = 'hello world';
       runCallback(123, param, '');
       assert.isTrue(reject.calledOnceWith(param));
     });
 
     it('should resolve if failed is undefined', () => {
-      resetGofer();
       const param = 'hello world';
       runCallback(123, param);
       assert.isTrue(reject.calledOnceWith(param));
@@ -231,7 +223,6 @@ describe('--- CALLBACKS ---', () => {
 
     it('should call deletePromise with id', () => {
       __set__('deletePromise', deletePromiseSpy);
-      resetGofer();
       runCallback(123);
       sinon.assert.calledWith(deletePromiseSpy, 123);
       __set__('deletePromise', deletePromise);
