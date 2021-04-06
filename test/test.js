@@ -11,18 +11,6 @@ import {
 // Mock the window.
 global.window = {};
 
-// const fmGoferUUID = __get__('fmGoferUUID');
-// const fmGoferExists = __get__('fmGoferExists');
-// const initializeGofer = __get__('initializeGofer');
-// const getCallbackName = __get__('getCallbackName');
-// const createPromise = __get__('createPromise');
-// const getPromise = __get__('getPromise');
-// const deletePromise = __get__('deletePromise');
-// const setCallbackName = __get__('setCallbackName');
-// const runCallback = __get__('runCallback');
-// const PSWOOriginal = __get__('PerformScriptWithOption');
-// const fmOnReady_PSWO = __get__('fmOnReady_PerformScriptWithOption');
-
 describe('--- UTILS ---', () => {
   describe('fmGoferUUID', () => {
     const fmGoferUUID = __get__('fmGoferUUID');
@@ -97,19 +85,19 @@ describe('--- FMGOFER WINDOW OBJECT ---', () => {
 describe('--- CALLBACKS ---', () => {
   describe('getCallbackName', () => {
     const getCallbackName = __get__('getCallbackName');
-    const fmGoferExists_original = __get__('fmGoferExists');
+    const fmGoferExists = __get__('fmGoferExists');
 
     it('should return null if fmGofer does not exist', () => {
       __set__('fmGoferExists', () => false);
       assert.isNull(getCallbackName(), 'getCallbackName() should be null');
-      __set__('fmGoferExists', fmGoferExists_original);
+      __set__('fmGoferExists', fmGoferExists);
     });
 
     it('should return name if fmGofer exists', () => {
       window.fmGofer = { callbackName: 'abcdefghijklmnop' };
       __set__('fmGoferExists', () => true);
       assert.strictEqual(getCallbackName(), window.fmGofer.callbackName);
-      __set__('fmGoferExists', fmGoferExists_original);
+      __set__('fmGoferExists', fmGoferExists);
     });
 
     it('should return undefined if window.fmGofer exists but not callbackName', () => {
@@ -149,15 +137,16 @@ describe('--- CALLBACKS ---', () => {
     });
 
     it('should initialize fmGofer if !fmGoferExists()', () => {
-      const fmGoferExists_original = __get__('fmGoferExists');
-      const initializeGofer_original = __get__('initializeGofer');
-      __set__('fmGoferExists', () => false);
-      __set__('initializeGofer', () => (window.fmGofer = {}));
-      delete window.fmGofer;
+      const fmGoferExists = __get__('fmGoferExists');
+      const initializeGofer = __get__('initializeGofer');
+      const initializeGoferSpy = sinon.spy();
+      __set__('fmGoferExists', sinon.fake.returns(false));
+      __set__('initializeGofer', initializeGoferSpy);
+      window.fmGofer = {};
       setCallbackName();
-      assert.isObject(window.fmGofer);
-      __set__('fmGoferExists', fmGoferExists_original);
-      __set__('initializeGofer', initializeGofer_original);
+      sinon.assert.calledOnce(initializeGoferSpy);
+      __set__('fmGoferExists', fmGoferExists);
+      __set__('initializeGofer', initializeGofer);
     });
   });
 
@@ -233,43 +222,39 @@ describe('--- CALLBACKS ---', () => {
 describe('--- PROMISES ---', () => {
   describe('createPromise', () => {
     const createPromise = __get__('createPromise');
-    // window.fmGofer = { promises: {}, callbackName: null };
-    const resetGofer = () =>
-      (window.fmGofer = { promises: {}, callbackName: null });
+    beforeEach(() => {
+      window.fmGofer = { promises: {}, callbackName: null };
+    });
     const fn = () => {};
 
     it('should return a string id', () => {
-      resetGofer();
-      assert.isString(createPromise(fn, fn), 'createPromise error');
+      assert.isString(createPromise(fn, fn));
     });
 
     it('should store an object in promises with the key returned', () => {
-      resetGofer();
       const id = createPromise(fn, fn);
-      assert.isObject(window.fmGofer.promises[id], 'get promise by id');
+      assert.isObject(window.fmGofer.promises[id]);
     });
 
     it('object should have resolve, reject, timeoutID keys', () => {
-      resetGofer();
       const id = createPromise(fn, fn);
       const keys = ['resolve', 'reject', 'timeoutID'];
-      assert.hasAllKeys(window.fmGofer.promises[id], keys, 'get keys');
+      assert.hasAllKeys(window.fmGofer.promises[id], keys);
     });
 
     it('should not have a timeoutID if you pass zero as timeout', () => {
-      resetGofer();
       const id = createPromise(fn, fn, 0);
-      assert.doesNotHaveAllKeys(window.fmGofer.promises[id], ['timeoutID']);
+      assert.doesNotHaveAllKeys(window.fmGofer.promises[id]);
     });
 
     it('should return an fmGoferUUID', () => {
-      resetGofer();
-      const fmGoferUUID_original = __get__('fmGoferUUID');
-      const spy = sinon.spy(fmGoferUUID_original);
-      __set__('fmGoferUUID', spy);
+      const fmGoferUUID = __get__('fmGoferUUID');
+      const fmGoferUUIDFake = sinon.fake.returns('FAKE_UUID');
+      __set__('fmGoferUUID', fmGoferUUIDFake);
       const res = createPromise(fn, fn, 0);
-      assert.strictEqual(res, spy.returnValues[0]);
-      __set__('fmGoferUUID', fmGoferUUID_original);
+      assert.strictEqual(res, 'FAKE_UUID');
+      sinon.assert.calledOnce(fmGoferUUIDFake);
+      __set__('fmGoferUUID', fmGoferUUID);
     });
   });
 
@@ -285,9 +270,11 @@ describe('--- PROMISES ---', () => {
     const deletePromise = __get__('deletePromise');
 
     it('should delete a promise stored at window.fmGofer.promise[id]', () => {
-      window.fmGofer = { promises: { 12345: 'abcde' } };
-      deletePromise(12345);
-      assert.isUndefined(window.fmGofer.promises[12345]);
+      const id = 12345;
+      window.fmGofer = { promises: { [id]: 'abcde' } };
+      console.log('window.fmGofer.promises :>> ', window.fmGofer.promises);
+      deletePromise(id);
+      assert.isUndefined(window.fmGofer.promises[id]);
     });
 
     it('should return true', () => {
@@ -299,17 +286,14 @@ describe('--- PROMISES ---', () => {
 describe('--- PERFORMING SCRIPTS ---', () => {
   describe('PerformScript', () => {
     const script = 'My Script';
-    const PSWOOriginal = __get__('PerformScriptWithOption');
+    const PSWO = __get__('PerformScriptWithOption');
     const PSWOSpy = sinon.spy();
-    // const defaultTimeout = 3000;
     const defaultTimeout = __get__('defaultTimeout');
-    // const defaultTimeoutMessage = 'The FM script call timed out';
     const defaultTimeoutMessage = __get__('defaultTimeoutMessage');
-    const mockPSWO = () => __set__('PerformScriptWithOption', PSWOSpy);
-    const unmockPSWO = () => __set__('PerformScriptWithOption', PSWOOriginal);
+    beforeEach(() => __set__('PerformScriptWithOption', PSWOSpy));
+    afterEach(() => __set__('PerformScriptWithOption', PSWO));
 
     it('should set default params', () => {
-      mockPSWO();
       PerformScript(script);
       sinon.assert.calledWith(
         PSWOSpy,
@@ -319,11 +303,9 @@ describe('--- PERFORMING SCRIPTS ---', () => {
         defaultTimeout,
         defaultTimeoutMessage
       );
-      unmockPSWO();
     });
 
     it('should pass params to PerformScriptWithOption', () => {
-      mockPSWO();
       PerformScript(script, 'my param', 2468, 'my message');
       sinon.assert.calledWith(
         PSWOSpy,
@@ -333,7 +315,6 @@ describe('--- PERFORMING SCRIPTS ---', () => {
         2468,
         'my message'
       );
-      unmockPSWO();
     });
   });
 
@@ -468,6 +449,7 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       const wrapper = () => {
         const clock = sinon.useFakeTimers();
         fn('test script', 'test param', 3);
+        // The function only checks for 2000ms, so this should trigger an error.
         clock.tick(2100);
         window.FileMaker = { PerformScriptWithOption: spy };
         // go forward 9ms so the setInterval function runs again (it runs every 5ms)
