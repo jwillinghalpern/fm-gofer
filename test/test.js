@@ -272,7 +272,6 @@ describe('--- PROMISES ---', () => {
     it('should delete a promise stored at window.fmGofer.promise[id]', () => {
       const id = 12345;
       window.fmGofer = { promises: { [id]: 'abcde' } };
-      console.log('window.fmGofer.promises :>> ', window.fmGofer.promises);
       deletePromise(id);
       assert.isUndefined(window.fmGofer.promises[id]);
     });
