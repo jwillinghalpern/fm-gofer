@@ -2,8 +2,11 @@
   "name": "fm-gofer",
   "version": "0.3.3",
   "description": "Framework for calling FileMaker scripts from a webviewer and retrieving results using callback promises.",
+  "homepage": "https://github.com/jwillinghalpern/fm-gofer#readme",
+  "issues": "https://github.com/jwillinghalpern/fm-gofer/issues",
   "main": "dist/fm-gofer.js",
   "module": "dist/fm-gofer.mjs",
+  "types": "dist/fm-gofer.d.ts",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha",
     "build": "webpack",
