@@ -7,6 +7,11 @@
   "main": "dist/fm-gofer.js",
   "module": "dist/fm-gofer.mjs",
   "types": "dist/fm-gofer.d.ts",
+  "files": [
+    "dist/*",
+    "test/*",
+    "src/*"
+  ],
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha",
     "build": "webpack && npm run jsdoc",
