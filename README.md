@@ -9,7 +9,7 @@ Check out `./example/FMGofer.fmp12`. You can find the html code in `./example/ex
 ## Install
 
 ```bash
-npm install --save https://github.com/jwillinghalpern/fm-gofer
+npm install --save fm-gofer
 ```
 
 ## Usage
