@@ -9,8 +9,9 @@
   "types": "dist/fm-gofer.d.ts",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha",
-    "build": "webpack",
-    "jsdoc": "jsdoc -r src -t node_modules/tsd-jsdoc/dist -d dist --package package.json"
+    "build": "webpack && npm run jsdoc",
+    "jsdoc": "jsdoc -r src -t node_modules/tsd-jsdoc/dist -d dist --package package.json && npm run add-export-to-types",
+    "add-export-to-types": "node scripts/add-export-to-types.js"
   },
   "author": "Josh Willing <josh@willingapps.com>",
   "license": "ISC",
