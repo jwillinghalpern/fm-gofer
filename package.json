@@ -47,6 +47,7 @@
     "babel-plugin-istanbul": "^6.0.0",
     "babel-plugin-rewire": "^1.2.0",
     "chai": "^4.3.4",
+    "core-js": "^3.10.1",
     "cross-env": "^7.0.3",
     "eslint": "^7.22.0",
     "eslint-config-node": "^4.1.0",
