@@ -6,9 +6,12 @@
   "issues": "https://github.com/jwillinghalpern/fm-gofer/issues",
   "main": "dist/fm-gofer.js",
   "exports": {
-    "import": "./dist/fm-gofer.mjs",
-    "require": "./dist/fm-gofer.js",
-    "default": "./dist/fm-gofer.js"
+    ".": {
+      "import": "./dist/fm-gofer.mjs",
+      "require": "./dist/fm-gofer.js",
+      "default": "./dist/fm-gofer.js"
+    },
+    "./polyfill-ie11": "./dist/polyfill-ie11.js"
   },
   "module": "dist/fm-gofer.mjs",
   "types": "dist/fm-gofer.d.ts",
