@@ -4,6 +4,7 @@ const mode = 'production';
 module.exports = [
   {
     entry: path.resolve(__dirname, 'src/index.js'),
+    target: 'es5',
     output: {
       globalObject: 'this',
       path: path.resolve(__dirname, 'dist'),
@@ -26,14 +27,13 @@ module.exports = [
   },
   {
     // same as the umd above, but target es5 and polyfill promise for ie11
-    entry: ['core-js/stable/promise', path.resolve(__dirname, 'src/index.js')],
+    entry: ['core-js/stable/promise'],
     target: 'es5',
     output: {
       globalObject: 'this',
       path: path.resolve(__dirname, 'dist'),
-      filename: 'fm-gofer.ie11.js',
+      filename: 'polyfill-ie11.js',
       library: {
-        name: 'FMGofer',
         type: 'umd',
       },
     },
