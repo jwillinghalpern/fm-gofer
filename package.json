@@ -20,6 +20,14 @@
     "test/*",
     "src/*"
   ],
+  "keywords": [
+    "filemaker",
+    "javascript",
+    "web viewer",
+    "webviewer",
+    "promise",
+    "callback"
+  ],
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha",
     "build": "webpack && npm run jsdoc",
