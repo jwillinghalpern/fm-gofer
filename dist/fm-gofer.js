@@ -103,7 +103,7 @@
   };
   var defaultTimeout = 3000;
   var defaultTimeoutMessage = 'The FM script call timed out';
-  var PerformScriptWithOption = function PerformScriptWithOption(script) {
+  function PerformScriptWithOption(script) {
     var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var option = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
     var timeout = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : defaultTimeout;
@@ -123,14 +123,14 @@
       });
       fmOnReady_PerformScriptWithOption(script, param, option);
     });
-  };
-  var PerformScript = function PerformScript(script) {
+  }
+  function PerformScript(script) {
     var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultTimeout;
     var timeoutMessage = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : defaultTimeoutMessage;
     var option = undefined;
     return PerformScriptWithOption(script, parameter, option, timeout, timeoutMessage);
-  };
+  }
 
   exports.PerformScript = PerformScript;
   exports.PerformScriptWithOption = PerformScriptWithOption;

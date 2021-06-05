@@ -30,7 +30,8 @@
   ],
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha",
-    "build": "webpack && npm run jsdoc",
+    "build-old": "webpack && npm run jsdoc",
+    "build": "rollup -c && npm run jsdoc && npx gulp",
     "serve": "http-server ./example",
     "jsdoc": "jsdoc -r src -t node_modules/tsd-jsdoc/dist -d dist --package package.json && npm run add-export-to-types",
     "add-export-to-types": "node scripts/add-export-to-types.js"
@@ -70,6 +71,10 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "esm": "^3.2.25",
+    "gulp": "^4.0.2",
+    "gulp-inline-source": "^4.0.0",
+    "gulp-rename": "^2.0.0",
+    "gulp-replace": "^1.1.3",
     "http-server": "^0.12.3",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0",
