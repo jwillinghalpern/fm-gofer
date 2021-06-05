@@ -31,6 +31,7 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha",
     "build": "webpack && npm run jsdoc",
+    "serve": "http-server ./example",
     "jsdoc": "jsdoc -r src -t node_modules/tsd-jsdoc/dist -d dist --package package.json && npm run add-export-to-types",
     "add-export-to-types": "node scripts/add-export-to-types.js"
   },
@@ -66,9 +67,11 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "esm": "^3.2.25",
+    "http-server": "^0.12.3",
     "mocha": "^8.3.2",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
+    "rollup": "^2.50.6",
     "sinon": "^10.0.0",
     "tsd-jsdoc": "^2.5.0",
     "webpack": "^5.28.0",
