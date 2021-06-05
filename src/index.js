@@ -135,13 +135,13 @@ const defaultTimeoutMessage = 'The FM script call timed out';
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns a promise that FileMaker can resolve or reject
  */
-export const PerformScriptWithOption = (
+export function PerformScriptWithOption(
   script,
   parameter = null,
   option = 0,
   timeout = defaultTimeout,
   timeoutMessage = defaultTimeoutMessage
-) => {
+) {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
@@ -156,7 +156,7 @@ export const PerformScriptWithOption = (
     const param = JSON.stringify({ promiseID, callbackName, parameter });
     fmOnReady_PerformScriptWithOption(script, param, option);
   });
-};
+}
 
 /**
  * Perform a FileMaker Script. FM can return a result by resolving or rejecting
@@ -168,12 +168,12 @@ export const PerformScriptWithOption = (
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns a promise that FileMaker can resolve or reject
  */
-export const PerformScript = (
+export function PerformScript(
   script,
   parameter = null,
   timeout = defaultTimeout,
   timeoutMessage = defaultTimeoutMessage
-) => {
+) {
   const option = undefined;
   return PerformScriptWithOption(
     script,
@@ -182,4 +182,4 @@ export const PerformScript = (
     timeout,
     timeoutMessage
   );
-};
+}

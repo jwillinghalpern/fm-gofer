@@ -35,6 +35,7 @@ module.exports = [
       filename: 'polyfill-ie11.js',
       library: {
         type: 'umd',
+        // type: 'promisePolyfill',
       },
     },
     module: {
