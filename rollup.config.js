@@ -13,6 +13,12 @@ export default [
         name: 'FMGofer',
       },
       {
+        file: './dist/fm-gofer.min.js',
+        format: 'umd',
+        name: 'FMGofer',
+        plugins: [terser()],
+      },
+      {
         file: './dist/fm-gofer.mjs',
         format: 'es',
         name: 'FMGofer',
@@ -26,11 +32,15 @@ export default [
       {
         file: './dist/polyfill-ie11.js',
         format: 'umd',
-        // I think this is right name to use for a polyfill of Promise.
-        // Webpack lets you export a library without decalaring name, but rollup requires it.
         name: 'Promise',
       },
+      {
+        file: './dist/polyfill-ie11.min.js',
+        format: 'umd',
+        name: 'Promise',
+        plugins: [terser()],
+      },
     ],
-    plugins: [babel({ babelHelpers: 'bundled' }), commonjs(), terser()],
+    plugins: [babel({ babelHelpers: 'bundled' }), commonjs()],
   },
 ];
