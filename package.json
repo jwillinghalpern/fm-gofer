@@ -18,7 +18,8 @@
   "files": [
     "dist/*",
     "test/*",
-    "src/*"
+    "src/*",
+    "scripts/*"
   ],
   "keywords": [
     "filemaker",
