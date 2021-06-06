@@ -30,11 +30,11 @@ const FMGofer = require('fm-gofer');
 Or copy into HTML:
 
 ```html
-<script> (copy of ./dist/polyfill-ie11.js) </script>
-<script> (copy of ./dist/fm-gofer.js) </script>
+<script> (copy of ./dist/polyfill-ie11.min.js) </script>
+<script> (copy of ./dist/fm-gofer.min.js) </script>
 ```
 
-***IMPORTANT:*** `polyfill-ie11.js` is required for webviewers in Windows FM Pro, because Internet Explorer 11 doesn't support promises. But if your app has a build system like Webpack/Rollup that uses Babel, then you can omit `polyfill-ie11` and use your build system to polyfill promises instead. This is great for React/Vue/Svelte.
+***IMPORTANT:*** `polyfill-ie11.js` (or `polyfill-ie11.min.js`) is required for webviewers in Windows FM Pro, because Internet Explorer 11 doesn't support promises. But if your app has a build system like Webpack/Rollup that uses Babel, then you can omit `polyfill-ie11` and use your build system to polyfill promises instead. This is great for React/Vue/Svelte.
 
 ### Use fm-gofer
 
@@ -60,6 +60,7 @@ Set Variable [ $promiseID ; JSONGetElement ( Get(ScriptParameter) ; "promiseID" 
 Set Variable [ $parameter ; JSONGetElement ( Get(ScriptParameter) ; "parameter" ) ]
 
 # callback to JS like: $callbackName($promiseID, <dataToReturn>, <trueToReject>)
+# (leave the last argument empty or False to indicate a success. Or set to True to indicate an error)
 Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: $callbackName ; Parameters: $promiseID, <dataToReturn>, <trueToReject> ]
 ```
 
