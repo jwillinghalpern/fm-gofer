@@ -131,9 +131,14 @@
     var option = undefined;
     return PerformScriptWithOption(script, parameter, option, timeout, timeoutMessage);
   };
+  var FMGofer = {
+    PerformScript: PerformScript,
+    PerformScriptWithOption: PerformScriptWithOption
+  };
 
   exports.PerformScript = PerformScript;
   exports.PerformScriptWithOption = PerformScriptWithOption;
+  exports.default = FMGofer;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -183,3 +183,6 @@ export const PerformScript = (
     timeoutMessage
   );
 };
+
+const FMGofer = { PerformScript, PerformScriptWithOption };
+export { FMGofer as default };

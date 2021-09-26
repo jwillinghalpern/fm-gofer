@@ -125,5 +125,10 @@ var PerformScript = function PerformScript(script) {
   var option = undefined;
   return PerformScriptWithOption(script, parameter, option, timeout, timeoutMessage);
 };
+var FMGofer = {
+  PerformScript: PerformScript,
+  PerformScriptWithOption: PerformScriptWithOption
+};
 
+export default FMGofer;
 export { PerformScript, PerformScriptWithOption };
