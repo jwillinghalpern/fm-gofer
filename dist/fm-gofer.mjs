@@ -31,7 +31,7 @@ var getCallbackName = function getCallbackName() {
 var initializeGofer = function initializeGofer() {
   window.fmGofer = {
     promises: {},
-    callbackName: null
+    callbackName: ''
   };
 };
 var createPromise = function createPromise(resolve, reject, timeout, timeoutMessage) {
@@ -55,18 +55,17 @@ var deletePromise = function deletePromise(id) {
   return delete window.fmGofer.promises[id];
 };
 var runCallback = function runCallback(id) {
-  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-  var failed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+  var failed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
   try {
-    if (failed === '0') failed = false;
+    if (failed === '0') failed = '';
     var promise = getPromise(id);
     if (typeof promise === 'undefined') throw new Error("No promise found for promiseID ".concat(id, "."));
     if (promise.timeoutID) clearTimeout(promise.timeoutID);
-    if (failed) promise.reject(parameter);else promise.resolve(parameter);
+    if (!!failed) promise.reject(parameter);else promise.resolve(parameter);
     deletePromise(id);
   } catch (error) {
     console.error(error);
-    alert(error);
   }
 };
 var setCallbackName = function setCallbackName() {
@@ -81,25 +80,23 @@ var fmOnReady_PerformScriptWithOption = function fmOnReady_PerformScriptWithOpti
     window.FileMaker.PerformScriptWithOption(script, param, option);
     return;
   }
-  var intervalID;
-  var timeoutID;
-  intervalID = setInterval(function () {
+  var timeoutID = setTimeout(function () {
+    clearInterval(intervalID);
+    throw new Error('window.FileMaker not found');
+  }, 2000);
+  var intervalID = setInterval(function () {
     if (_typeof(window.FileMaker) === 'object') {
       clearTimeout(timeoutID);
       clearInterval(intervalID);
       window.FileMaker.PerformScriptWithOption(script, param, option);
     }
   }, 5);
-  timeoutID = setTimeout(function () {
-    clearInterval(intervalID);
-    throw new Error('window.FileMaker not found');
-  }, 2000);
 };
-var defaultTimeout = 3000;
+var defaultTimeout = 15000;
 var defaultTimeoutMessage = 'The FM script call timed out';
 var PerformScriptWithOption = function PerformScriptWithOption(script) {
-  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-  var option = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
+  var option = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
   var timeout = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : defaultTimeout;
   var timeoutMessage = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : defaultTimeoutMessage;
   if (typeof script !== 'string' || !script) throw new Error('script must be a string');
@@ -119,7 +116,7 @@ var PerformScriptWithOption = function PerformScriptWithOption(script) {
   });
 };
 var PerformScript = function PerformScript(script) {
-  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : undefined;
   var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultTimeout;
   var timeoutMessage = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : defaultTimeoutMessage;
   var option = undefined;

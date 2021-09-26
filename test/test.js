@@ -169,10 +169,10 @@ describe('--- CALLBACKS ---', () => {
       __set__('getPromise', getPromise);
     });
 
-    it('should throw if getPromise() returns undefined', () => {
-      sinon.stub(console, 'error');
+    it('should log error if getPromise() returns undefined', () => {
       __set__('getPromise', sinon.fake.returns(undefined));
-      assert.throws(() => runCallback('non_existent_id'), Error);
+      runCallback('non_existent_id');
+      sinon.assert.calledOnce(console.error);
       __set__('getPromise', getPromise);
       console.error.restore();
     });
