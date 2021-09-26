@@ -163,7 +163,7 @@ export const PerformScriptWithOption = (
  * @function
  *
  * @param {string} script name of script
- * @param {any} parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
+ * @param {any} [parameter=null] you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
