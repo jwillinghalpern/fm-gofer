@@ -21,7 +21,7 @@
           var script = 'FM Script';
           var param = 'HELLO FROM JS ' + new Date();
           var timeout = 1000;
-          var timeoutMessage = 'Custom timeout message (' + timeout + 'ms)';
+          var timeoutMessage = 'Custom timeout message. The webviewer code elected to only wait for ' + timeout + 'ms.';
           updateMessage('Waiting...');
           showLoader();
           FMGofer.PerformScript(script, param, timeout, timeoutMessage)
