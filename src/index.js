@@ -64,10 +64,10 @@ const deletePromise = (id) => delete window.fmGofer.promises[id];
  *
  * @param {string} id promise id
  * @param {string} [parameter=undefined] any parameter you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
- * @param {string} [failed=''] A truthy or falsey string. '0' string is treated as falsey. Pass in a truthy string to reject the promise.
+ * @param {string} [failed=undefined] A truthy or falsey string. '0' string is treated as falsey. Pass in a truthy string to reject the promise.
  * @private
  */
-const runCallback = (id, parameter = undefined, failed = '') => {
+const runCallback = (id, parameter = undefined, failed = undefined) => {
   try {
     if (failed === '0') failed = '';
     const promise = getPromise(id);
@@ -79,7 +79,6 @@ const runCallback = (id, parameter = undefined, failed = '') => {
     deletePromise(id);
   } catch (error) {
     console.error(error);
-    alert(error);
   }
 };
 
@@ -119,7 +118,7 @@ const fmOnReady_PerformScriptWithOption = (script, param, option) => {
   }, 5);
 };
 
-const defaultTimeout = 3000;
+const defaultTimeout = 15000;
 const defaultTimeoutMessage = 'The FM script call timed out';
 
 /**
@@ -129,7 +128,7 @@ const defaultTimeoutMessage = 'The FM script call timed out';
  * @param {string} script name of script
  * @param {any} [parameter=undefined] parameter param you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {number} [option=0] FM script option between 0 and 5
- * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
+ * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
@@ -162,7 +161,7 @@ export const PerformScriptWithOption = (
  *
  * @param {string} script name of script
  * @param {any} [parameter=undefined] you wish to send to fm. It will be nested in the `parameter` property of the script parameter
- * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
+ * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
