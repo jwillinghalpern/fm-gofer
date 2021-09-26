@@ -133,7 +133,7 @@ const defaultTimeoutMessage = 'The FM script call timed out';
  * @param {number} [option=0] FM script option between 0 and 5
  * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
- * @returns a promise that FileMaker can resolve or reject
+ * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
 export const PerformScriptWithOption = (
   script,
@@ -166,7 +166,7 @@ export const PerformScriptWithOption = (
  * @param {any} parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
- * @returns a promise that FileMaker can resolve or reject
+ * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
 export const PerformScript = (
   script,

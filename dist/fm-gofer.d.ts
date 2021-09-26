@@ -7,7 +7,7 @@
  * @param [timeoutMessage = 'The FM script call timed out'] - custom message if the call times out.
  * @returns a promise that FileMaker can resolve or reject
  */
-export declare function PerformScriptWithOption(script: string, parameter?: any, option?: number, timeout?: number, timeoutMessage?: string): any;
+export declare function PerformScriptWithOption(script: string, parameter?: any, option?: number, timeout?: number, timeoutMessage?: string): Promise<string>;
 
 /**
  * Perform a FileMaker Script. FM can return a result by resolving or rejecting
@@ -17,5 +17,5 @@ export declare function PerformScriptWithOption(script: string, parameter?: any,
  * @param [timeoutMessage = 'The FM script call timed out'] - custom message if the call times out.
  * @returns a promise that FileMaker can resolve or reject
  */
-export declare function PerformScript(script: string, parameter: any, timeout?: number, timeoutMessage?: string): any;
+export declare function PerformScript(script: string, parameter: any, timeout?: number, timeoutMessage?: string): Promise<string>;
 

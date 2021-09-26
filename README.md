@@ -30,11 +30,11 @@ const FMGofer = require('fm-gofer');
 Or copy into HTML:
 
 ```html
-<script> (copy of ./dist/polyfill-ie11.js) </script>
-<script> (copy of ./dist/fm-gofer.js) </script>
+<script> (copy of ./dist/polyfill-ie11.min.js) </script>
+<script> (copy of ./dist/fm-gofer.min.js) </script>
 ```
 
-***IMPORTANT:*** `polyfill-ie11.js` is required for webviewers in Windows FM Pro, because Internet Explorer 11 doesn't support promises. But if your app has a build system like Webpack/Rollup that uses Babel, then you can omit `polyfill-ie11` and use your build system to polyfill promises instead. This is great for React/Vue/Svelte.
+***IMPORTANT:*** `polyfill-ie11.js` (or `polyfill-ie11.min.js`) is only required for webviewers in Windows FileMaker Pro < 19.3.1, because Internet Explorer 11 doesn't support promises and newer FM versions use MS Edge. But if your app has a build step like Webpack/Rollup then you can omit `polyfill-ie11` and use your build system to polyfill promises instead. But if you're importing the library via `<script>` tags then `polyfill-ie11.min.js` is your friend.
 
 ### Use fm-gofer
 
@@ -60,7 +60,8 @@ Set Variable [ $promiseID ; JSONGetElement ( Get(ScriptParameter) ; "promiseID" 
 Set Variable [ $parameter ; JSONGetElement ( Get(ScriptParameter) ; "parameter" ) ]
 
 # callback to JS like: $callbackName($promiseID, <dataToReturn>, <trueToReject>)
-Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: $callbackName ; Parameters: $promiseID, <dataToReturn>, <trueToReject> ]
+# (leave the third argument empty or False to indicate a success. Or set to True to indicate an error)
+Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: $callbackName ; Parameters: $promiseID, 'Success! Hello from FM!' ]
 ```
 
 ## MISC
@@ -79,4 +80,4 @@ npm run build
 
 ## Contribute
 
-This code is young. If you see anything that should be improved please feel free to send pull requests or create issues.
+If you see anything that should be improved please feel free to let me know or send pull requests.

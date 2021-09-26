@@ -1,1 +1,129 @@
-var e={d:(r,o)=>{for(var t in o)e.o(o,t)&&!e.o(r,t)&&Object.defineProperty(r,t,{enumerable:!0,get:o[t]})},o:(e,r)=>Object.prototype.hasOwnProperty.call(e,r)},r={};e.d(r,{M:()=>a,B:()=>l});const o=()=>"object"==typeof window.fmGofer&&null!==window.fmGofer&&!Array.isArray(window.fmGofer),t=()=>o()?window.fmGofer.callbackName:null,i=()=>{window.fmGofer={promises:{},callbackName:null}},n=(e,r=null,o="")=>{try{"0"===o&&(o=!1);const t=(e=>window.fmGofer.promises[e])(e);if(void 0===t)throw new Error(`No promise found for promiseID ${e}.`);t.timeoutID&&clearTimeout(t.timeoutID),o?t.reject(r):t.resolve(r),(e=>{delete window.fmGofer.promises[e]})(e)}catch(e){console.error(e),alert(e)}},a=(e,r=null,a=0,l=3e3,m="The FM script call timed out")=>{if("string"!=typeof e||!e)throw new Error("script must be a string");if("number"!=typeof l)throw new Error("timeout must be a number");if("string"!=typeof m)throw new Error("timeoutMessage must be a string");return new Promise(((w,f)=>{o()||i(),t()||((e="fmGoferD7738642C91848E08720EAC24EDDA483")=>{if("string"!=typeof e||!e)throw new Error("callbackName must be a non-empty string");o()||i(),window[e]=n,window.fmGofer.callbackName=e})();const s=((e,r,o,t)=>{const i={resolve:e,reject:r};0!==o&&(i.timeoutID=setTimeout((()=>{r(t)}),o));const n="xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g,(e=>{var r=16*Math.random()|0;return("x"==e?r:3&r|8).toString(16)}));return window.fmGofer.promises[n]=i,n})(w,f,l,m),c=t(),x=JSON.stringify({promiseID:s,callbackName:c,parameter:r});((e,r,o)=>{if("object"==typeof window.FileMaker)return void window.FileMaker.PerformScriptWithOption(e,r,o);let t,i;t=setInterval((()=>{"object"==typeof window.FileMaker&&(clearTimeout(i),clearInterval(t),window.FileMaker.PerformScriptWithOption(e,r,o))}),5),i=setTimeout((()=>{throw clearInterval(t),new Error("window.FileMaker not found")}),2e3)})(e,x,a)}))},l=(e,r=null,o=3e3,t="The FM script call timed out")=>a(e,r,void 0,o,t);var m=r.B,w=r.M;export{m as PerformScript,w as PerformScriptWithOption};
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function (obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function (obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
+var fmGoferUUID = function fmGoferUUID() {
+  var template = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx';
+  return template.replace(/[xy]/g, function (c) {
+    var r = Math.random() * 16 | 0,
+        v = c == 'x' ? r : r & 0x3 | 0x8;
+    return v.toString(16);
+  });
+};
+var fmGoferExists = function fmGoferExists() {
+  return _typeof(window.fmGofer) === 'object' && window.fmGofer !== null && !Array.isArray(window.fmGofer);
+};
+var getCallbackName = function getCallbackName() {
+  return fmGoferExists() ? window.fmGofer.callbackName : null;
+};
+var initializeGofer = function initializeGofer() {
+  window.fmGofer = {
+    promises: {},
+    callbackName: null
+  };
+};
+var createPromise = function createPromise(resolve, reject, timeout, timeoutMessage) {
+  var promise = {
+    resolve: resolve,
+    reject: reject
+  };
+  if (timeout !== 0) {
+    promise.timeoutID = setTimeout(function () {
+      reject(timeoutMessage);
+    }, timeout);
+  }
+  var id = fmGoferUUID();
+  window.fmGofer.promises[id] = promise;
+  return id;
+};
+var getPromise = function getPromise(id) {
+  return window.fmGofer.promises[id];
+};
+var deletePromise = function deletePromise(id) {
+  return delete window.fmGofer.promises[id];
+};
+var runCallback = function runCallback(id) {
+  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var failed = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+  try {
+    if (failed === '0') failed = false;
+    var promise = getPromise(id);
+    if (typeof promise === 'undefined') throw new Error("No promise found for promiseID ".concat(id, "."));
+    if (promise.timeoutID) clearTimeout(promise.timeoutID);
+    if (failed) promise.reject(parameter);else promise.resolve(parameter);
+    deletePromise(id);
+  } catch (error) {
+    console.error(error);
+    alert(error);
+  }
+};
+var setCallbackName = function setCallbackName() {
+  var callbackName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'fmGoferD7738642C91848E08720EAC24EDDA483';
+  if (typeof callbackName !== 'string' || !callbackName) throw new Error('callbackName must be a non-empty string');
+  if (!fmGoferExists()) initializeGofer();
+  window[callbackName] = runCallback;
+  window.fmGofer.callbackName = callbackName;
+};
+var fmOnReady_PerformScriptWithOption = function fmOnReady_PerformScriptWithOption(script, param, option) {
+  if (_typeof(window.FileMaker) === 'object') {
+    window.FileMaker.PerformScriptWithOption(script, param, option);
+    return;
+  }
+  var intervalID;
+  var timeoutID;
+  intervalID = setInterval(function () {
+    if (_typeof(window.FileMaker) === 'object') {
+      clearTimeout(timeoutID);
+      clearInterval(intervalID);
+      window.FileMaker.PerformScriptWithOption(script, param, option);
+    }
+  }, 5);
+  timeoutID = setTimeout(function () {
+    clearInterval(intervalID);
+    throw new Error('window.FileMaker not found');
+  }, 2000);
+};
+var defaultTimeout = 3000;
+var defaultTimeoutMessage = 'The FM script call timed out';
+var PerformScriptWithOption = function PerformScriptWithOption(script) {
+  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var option = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  var timeout = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : defaultTimeout;
+  var timeoutMessage = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : defaultTimeoutMessage;
+  if (typeof script !== 'string' || !script) throw new Error('script must be a string');
+  if (typeof timeout !== 'number') throw new Error('timeout must be a number');
+  if (typeof timeoutMessage !== 'string') throw new Error('timeoutMessage must be a string');
+  return new Promise(function (resolve, reject) {
+    if (!fmGoferExists()) initializeGofer();
+    if (!getCallbackName()) setCallbackName();
+    var promiseID = createPromise(resolve, reject, timeout, timeoutMessage);
+    var callbackName = getCallbackName();
+    var param = JSON.stringify({
+      promiseID: promiseID,
+      callbackName: callbackName,
+      parameter: parameter
+    });
+    fmOnReady_PerformScriptWithOption(script, param, option);
+  });
+};
+var PerformScript = function PerformScript(script) {
+  var parameter = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+  var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : defaultTimeout;
+  var timeoutMessage = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : defaultTimeoutMessage;
+  var option = undefined;
+  return PerformScriptWithOption(script, parameter, option, timeout, timeoutMessage);
+};
+
+export { PerformScript, PerformScriptWithOption };

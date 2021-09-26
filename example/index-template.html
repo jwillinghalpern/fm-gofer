@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fm-gofer example</title>
+    <!-- Scroll to the body for example usage -->
+    <script src="../dist/polyfill-ie11.js"></script>
+    <script src="../dist/fm-gofer.js"></script>
+    <link rel="stylesheet" href="index.css"></link>
+  </head>
+
+  <body>
+    <button id="myButton">Click Me</button>
+    <div id="message" class="message">Click the button to get a message</div>
+    <div id="loader" class="loader" hidden>Loading...</div>
+    <script>
+      (function () {
+        function handleClick() {
+          var script = 'FM Script';
+          var param = 'HELLO FROM JS ' + new Date();
+          var timeout = 1000;
+          var timeoutMessage = 'Custom timeout message (' + timeout + 'ms)';
+          updateMessage('Waiting...');
+          showLoader();
+          FMGofer.PerformScript(script, param, timeout, timeoutMessage)
+            .then(function (result) {
+              console.log('Entered .then block');
+              hideLoader();
+              updateMessage(result);
+            })
+            .catch(function (error) {
+              console.log('Entered .catch block');
+              hideLoader();
+              updateMessage(error);
+            });
+        }
+        function showLoader() {
+          document.getElementById('loader').hidden = false;
+        }
+        function hideLoader() {
+          document.getElementById('loader').hidden = true;
+        }
+        function updateMessage(message) {
+          document.getElementById('message').innerText = message;
+        }
+
+        document.getElementById('myButton').onclick = handleClick;
+      })();
+    </script>
+  </body>
+</html>
