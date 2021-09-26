@@ -29,7 +29,7 @@ const getCallbackName = () => {
 const initializeGofer = () => {
   window.fmGofer = {
     promises: {},
-    callbackName: null,
+    callbackName: '',
   };
 };
 
@@ -63,18 +63,18 @@ const deletePromise = (id) => delete window.fmGofer.promises[id];
  * Resolve or reject a saved callback promise.
  *
  * @param {string} id promise id
- * @param {string} [parameter=null] any parameter you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
- * @param {string} [failed=''] A truthy or falsey string. We treat '0' as falsey. Pass in a truthy string to reject the promise.
+ * @param {string} [parameter=undefined] any parameter you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
+ * @param {string} [failed=''] A truthy or falsey string. '0' string is treated as falsey. Pass in a truthy string to reject the promise.
  * @private
  */
-const runCallback = (id, parameter = null, failed = '') => {
+const runCallback = (id, parameter = undefined, failed = '') => {
   try {
-    if (failed === '0') failed = false;
+    if (failed === '0') failed = '';
     const promise = getPromise(id);
     if (typeof promise === 'undefined')
       throw new Error(`No promise found for promiseID ${id}.`);
     if (promise.timeoutID) clearTimeout(promise.timeoutID);
-    if (failed) promise.reject(parameter);
+    if (!!failed) promise.reject(parameter);
     else promise.resolve(parameter);
     deletePromise(id);
   } catch (error) {
@@ -106,19 +106,17 @@ const fmOnReady_PerformScriptWithOption = (script, param, option) => {
     return;
   }
   // then wait for FileMaker to appear before calling
-  let intervalID;
-  let timeoutID;
-  intervalID = setInterval(() => {
+  let timeoutID = setTimeout(() => {
+    clearInterval(intervalID);
+    throw new Error('window.FileMaker not found');
+  }, 2000);
+  let intervalID = setInterval(() => {
     if (typeof window.FileMaker === 'object') {
       clearTimeout(timeoutID);
       clearInterval(intervalID);
       window.FileMaker.PerformScriptWithOption(script, param, option);
     }
   }, 5);
-  timeoutID = setTimeout(() => {
-    clearInterval(intervalID);
-    throw new Error('window.FileMaker not found');
-  }, 2000);
 };
 
 const defaultTimeout = 3000;
@@ -129,7 +127,7 @@ const defaultTimeoutMessage = 'The FM script call timed out';
  * @function
  *
  * @param {string} script name of script
- * @param {any} [parameter=null] parameter param you wish to send to fm. It will be nested in the `parameter` property of the script parameter
+ * @param {any} [parameter=undefined] parameter param you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {number} [option=0] FM script option between 0 and 5
  * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
@@ -137,8 +135,8 @@ const defaultTimeoutMessage = 'The FM script call timed out';
  */
 export const PerformScriptWithOption = (
   script,
-  parameter = null,
-  option = 0,
+  parameter = undefined,
+  option = undefined,
   timeout = defaultTimeout,
   timeoutMessage = defaultTimeoutMessage
 ) => {
@@ -163,14 +161,14 @@ export const PerformScriptWithOption = (
  * @function
  *
  * @param {string} script name of script
- * @param {any} [parameter=null] you wish to send to fm. It will be nested in the `parameter` property of the script parameter
+ * @param {any} [parameter=undefined] you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {number} [timeout=3000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
 export const PerformScript = (
   script,
-  parameter = null,
+  parameter = undefined,
   timeout = defaultTimeout,
   timeoutMessage = defaultTimeoutMessage
 ) => {

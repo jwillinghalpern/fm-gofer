@@ -297,7 +297,7 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       sinon.assert.calledWith(
         PSWOSpy,
         script,
-        null,
+        undefined,
         undefined,
         defaultTimeout,
         defaultTimeoutMessage
