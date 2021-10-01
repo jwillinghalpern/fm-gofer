@@ -21,7 +21,7 @@ npm install --save fm-gofer
 `require` in JS:
 
 ```javascript
-// For NodeJS <12.7.0, use this longer version:
+// For NodeJS <12.7.0, you might need to use this longer version:
 // require('./node_modules/fm-gofer/dist/polyfill-ie11.js');
 require('fm-gofer/polyfill-ie11');
 const FMGofer = require('fm-gofer');
