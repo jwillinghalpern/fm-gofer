@@ -171,6 +171,7 @@ describe('--- CALLBACKS ---', () => {
 
     it('should log error if getPromise() returns undefined', () => {
       __set__('getPromise', sinon.fake.returns(undefined));
+      sinon.stub(console, 'error');
       runCallback('non_existent_id');
       sinon.assert.calledOnce(console.error);
       __set__('getPromise', getPromise);
@@ -255,6 +256,15 @@ describe('--- PROMISES ---', () => {
       assert.strictEqual(res, 'FAKE_UUID');
       sinon.assert.calledOnce(fmGoferUUIDFake);
       __set__('fmGoferUUID', fmGoferUUID);
+    });
+
+    it('should reject if timeout exceeded', () => {
+      const reject = sinon.spy();
+      const clock = sinon.useFakeTimers();
+      createPromise(() => {}, reject, 10, 'default message');
+      clock.tick(11);
+      sinon.assert.calledOnce(reject);
+      clock.restore();
     });
   });
 
