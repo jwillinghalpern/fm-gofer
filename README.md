@@ -44,7 +44,7 @@ In your JS:
 var a = await FMGofer.PerformScript('FM Script', param);
 var b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
 
-// Set a custom timeout/timeout message if the default 3000ms is too short
+// Set a custom timeout/timeout message if the default 15000 ms is too long
 var c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
 var d = await FMGofer.PerformScriptWithOption('FM Script', param, 5, 5000, 'timed out!');
 ```
