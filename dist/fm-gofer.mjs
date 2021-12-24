@@ -24,12 +24,14 @@ function initializeGofer() {
 }
 function createPromise(resolve, reject, timeout, timeoutMessage) {
     var promise = { resolve: resolve, reject: reject };
+    var id = fmGoferUUID();
     if (timeout !== 0) {
         promise.timeoutID = setTimeout(function () {
+            if (window.fmGofer.promises[id].clearIntervalFn)
+                window.fmGofer.promises[id].clearIntervalFn();
             reject(timeoutMessage);
         }, timeout);
     }
-    var id = fmGoferUUID();
     window.fmGofer.promises[id] = promise;
     return id;
 }
@@ -74,6 +76,10 @@ function fmOnReady_PerformScriptWithOption(script, param, option) {
             window.FileMaker.PerformScriptWithOption(script, param, option);
         }
     }, 5);
+    return function () {
+        clearTimeout(timeoutID);
+        clearInterval(intervalID);
+    };
 }
 function PerformScriptWithOption(script, parameter, option, timeout, timeoutMessage) {
     if (timeout === void 0) { timeout = defaultTimeout; }
@@ -85,10 +91,13 @@ function PerformScriptWithOption(script, parameter, option, timeout, timeoutMess
     if (typeof timeoutMessage !== 'string')
         throw new Error('timeoutMessage must be a string');
     return new Promise(function (resolve, reject) {
+        var _a;
         initializeGofer();
         var promiseID = createPromise(resolve, reject, timeout, timeoutMessage);
         var param = JSON.stringify({ promiseID: promiseID, callbackName: callbackName, parameter: parameter });
-        fmOnReady_PerformScriptWithOption(script, param, option);
+        var clearIntervalFn = fmOnReady_PerformScriptWithOption(script, param, option);
+        if ((_a = window.fmGofer.promises) === null || _a === void 0 ? void 0 : _a[promiseID])
+            window.fmGofer.promises[promiseID].clearIntervalFn = clearIntervalFn;
     });
 }
 function PerformScript(script, parameter, timeout, timeoutMessage) {

@@ -26,6 +26,7 @@ interface GoferPromise {
     resolve: Function;
     reject: Function;
     timeoutID?: ReturnType<typeof setTimeout>;
+    clearIntervalFn?: Function;
 }
 declare global {
     interface Window {

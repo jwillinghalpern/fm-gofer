@@ -100,7 +100,7 @@ describe('--- CALLBACKS ---', () => {
       const getPromiseMock = jest.fn(getPromise);
       __set__('getPromise', getPromiseMock);
       runCallback(123);
-      expect(getPromiseMock).toBeCalledTimes(1);
+      expect(getPromiseMock).toBeCalled();
       __set__('getPromise', getPromise);
     });
 
@@ -111,7 +111,7 @@ describe('--- CALLBACKS ---', () => {
       );
       jest.spyOn(console, 'error').mockImplementation(() => {});
       runCallback('non_existent_id');
-      expect(console.error).toBeCalledTimes(1);
+      expect(console.error).toBeCalled();
       __set__('getPromise', getPromise);
     });
 
@@ -192,7 +192,7 @@ describe('--- PROMISES ---', () => {
       __set__('fmGoferUUID', fmGoferUUIDFake);
       const res = createPromise(fn, fn, 0);
       expect(res).toStrictEqual('FAKE_UUID');
-      expect(fmGoferUUIDFake).toBeCalledTimes(1);
+      expect(fmGoferUUIDFake).toBeCalled();
       __set__('fmGoferUUID', fmGoferUUID);
     });
 
@@ -201,7 +201,7 @@ describe('--- PROMISES ---', () => {
       const clock = jest.useFakeTimers();
       createPromise(() => {}, reject, 10, 'default message');
       clock.advanceTimersByTime(11);
-      expect(reject).toBeCalledTimes(1);
+      expect(reject).toBeCalled();
       jest.useRealTimers();
     });
   });
@@ -319,7 +319,7 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       } catch (err) {
         1;
       }
-      expect(initializeGoferSpy).toBeCalledTimes(1);
+      expect(initializeGoferSpy).toBeCalled();
       __set__('fmGoferExists', fmGoferExists);
       __set__('initializeGofer', initializeGofer);
       __set__('getCallbackName', getCallbackName);
@@ -347,7 +347,7 @@ describe('--- PERFORMING SCRIPTS ---', () => {
         callbackName: callbackName,
         parameter: 'test param',
       };
-      expect(fmOnReady_PSWOSpy).toBeCalledTimes(1);
+      expect(fmOnReady_PSWOSpy).toBeCalled();
       expect(fmOnReady_PSWOSpy).toBeCalledWith(
         scriptName,
         JSON.stringify(param),
@@ -382,7 +382,7 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       // go forward 9ms so the setInterval function runs again (it runs every 5ms)
       clock.advanceTimersByTime(9);
       jest.useRealTimers();
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toBeCalled();
     });
 
     it('should throw Error if window.FileMaker is not ready in less than 2000 ms', () => {
@@ -400,6 +400,33 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       };
       expect(wrapper).toThrow();
       expect(spy).not.toBeCalled();
+    });
+
+    it('should return a clearIntervalFn function', () => {
+      const clearIntervalFn = fmOnReady_PerformScriptWithOption(
+        'script',
+        'param',
+        '3'
+      );
+      expect(typeof clearIntervalFn).toBe('function');
+    });
+
+    it('should call the clearIntervalFn function if promise is rejected due to timeout', () => {
+      const clearIntervalFnMock = jest.fn();
+      const mock = jest.fn().mockReturnValue(clearIntervalFnMock);
+      __set__('fmOnReady_PerformScriptWithOption', mock);
+      const clock = jest.useFakeTimers();
+      // custom timeout of 1000 ms. This is less than the 2000ms that FMGofer
+      // will wait for FileMaker.PerformScript to appear, and therefore we can
+      // check if a quick custom timeout trigger clearIntervalFn() to be called.
+      PerformScript('script', 'param', 1000).catch((err) => {});
+      clock.advanceTimersByTime(1020);
+      expect(clearIntervalFnMock).toBeCalled();
+      jest.useRealTimers();
+      __set__(
+        'fmOnReady_PerformScriptWithOption',
+        fmOnReady_PerformScriptWithOption
+      );
     });
   });
 });
