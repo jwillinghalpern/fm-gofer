@@ -1,6 +1,8 @@
+.parcel-cache
 node_modules
 .nyc_output/*
-coverage/*
+coverage
 # Output of 'npm pack'
 *.tgz
-playground/*
+playground
+example/index.html

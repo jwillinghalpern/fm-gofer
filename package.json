@@ -1,10 +1,14 @@
 {
   "name": "fm-gofer",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Framework for calling FileMaker scripts from a webviewer and retrieving results using callback promises.",
   "homepage": "https://github.com/jwillinghalpern/fm-gofer#readme",
   "issues": "https://github.com/jwillinghalpern/fm-gofer/issues",
+  "source": "src/index.ts",
   "main": "dist/fm-gofer.js",
+  "module": "dist/fm-gofer.mjs",
+  "types": "dist/fm-gofer.d.ts",
+  "browserslist": "defaults",
   "exports": {
     ".": {
       "import": "./dist/fm-gofer.mjs",
@@ -13,54 +17,37 @@
     },
     "./polyfill-ie11": "./dist/polyfill-ie11.js"
   },
-  "module": "dist/fm-gofer.mjs",
-  "types": "dist/fm-gofer.d.ts",
   "files": [
     "dist/*",
-    "test/*",
-    "src/*",
-    "scripts/*"
+    "__tests__/*",
+    "src/*"
   ],
   "keywords": [
     "filemaker",
     "javascript",
+    "typescript",
     "web viewer",
     "webviewer",
     "promise",
     "callback"
   ],
   "scripts": {
-    "test": "cross-env NODE_ENV=test nyc mocha",
-    "build": "rollup -c && npm run jsdoc && npx gulp",
-    "serve": "http-server ./example",
-    "jsdoc": "jsdoc -r src -t node_modules/tsd-jsdoc/dist -d dist --package package.json && npm run add-export-to-types",
-    "add-export-to-types": "node scripts/add-export-to-types.js"
+    "test": "cross-env NODE_ENV=test jest --collect-coverage",
+    "build": "rollup -c && node scripts/rename-dts.js && npm run build-example",
+    "build-example": "npx gulp"
   },
   "author": "Josh Willing Halpern <josh@willingapps.com>",
   "license": "ISC",
   "sourceType": "module",
   "sideEffects": false,
-  "nyc": {
-    "require": [
-      "@babel/register"
-    ],
-    "reporter": [
-      "lcov",
-      "text",
-      "html"
-    ],
-    "sourceMap": false,
-    "instrument": false
-  },
   "devDependencies": {
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.12",
-    "@babel/register": "^7.13.16",
+    "@babel/preset-typescript": "^7.16.5",
     "@rollup/plugin-babel": "^5.3.0",
-    "@rollup/plugin-commonjs": "^19.0.0",
-    "babel-plugin-istanbul": "^6.0.0",
-    "babel-plugin-rewire": "^1.2.0",
-    "chai": "^4.3.4",
+    "@rollup/plugin-commonjs": "^21.0.1",
+    "@types/jest": "^27.0.3",
+    "babel-plugin-rewire-ts": "^1.4.0",
     "core-js": "^3.10.1",
     "cross-env": "^7.0.3",
     "eslint": "^7.22.0",
@@ -73,13 +60,12 @@
     "gulp-rename": "^2.0.0",
     "gulp-replace": "^1.1.3",
     "http-server": "^0.12.3",
-    "mocha": "^8.3.2",
-    "nyc": "^15.1.0",
+    "jest": "^27.4.5",
     "prettier": "^2.2.1",
     "rollup": "^2.50.6",
     "rollup-plugin-cleanup": "^3.2.1",
     "rollup-plugin-terser": "^7.0.2",
-    "sinon": "^10.0.0",
-    "tsd-jsdoc": "^2.5.0"
+    "rollup-plugin-typescript2": "^0.31.1",
+    "typescript": "^4.4.4"
   }
 }

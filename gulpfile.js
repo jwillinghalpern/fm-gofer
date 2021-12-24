@@ -2,11 +2,11 @@
 const gulp = require('gulp');
 const inlinesource = require('gulp-inline-source');
 const replace = require('gulp-replace');
-var rename = require('gulp-rename');
+const rename = require('gulp-rename');
 
 gulp.task('default', () => {
   return gulp
-    .src('./example/index-template.html')
+    .src('./example/src/index.html')
     .pipe(replace(".js'></script>", ".js' inline></script>"))
     .pipe(replace('.js"></script>', '.js" inline></script>'))
     .pipe(replace('<script defer ', '<script '))

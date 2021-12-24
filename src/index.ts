@@ -1,37 +1,37 @@
+const defaultTimeout = 15000;
+const defaultTimeoutMessage = 'The FM script call timed out';
+const callbackName = 'fmGoferD7738642C91848E08720EAC24EDDA483';
+
 /**
  * generates a uuid without hyphens. It uses Math.random, so it's not *that* unique.
  * from https://stackoverflow.com/a/2117523
- * @private
  *
- * @returns {string} a uuid without hyphens
  */
-const fmGoferUUID = () => {
+function fmGoferUUID() {
   const template = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx';
   return template.replace(/[xy]/g, (c) => {
     var r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
-};
+}
 
-const fmGoferExists = () => {
+function fmGoferExists() {
   return (
     typeof window.fmGofer === 'object' &&
     window.fmGofer !== null &&
     !Array.isArray(window.fmGofer)
   );
-};
+}
 
-const getCallbackName = () => {
-  return fmGoferExists() ? window.fmGofer.callbackName : null;
-};
-
-const initializeGofer = () => {
+function initializeGofer() {
+  if (fmGoferExists()) return;
   window.fmGofer = {
     promises: {},
-    callbackName: '',
+    callbackName: callbackName,
   };
-};
+  window[callbackName] = runCallback;
+}
 
 /**
  * stores a callback promise and returns a promise id.
@@ -39,13 +39,18 @@ const initializeGofer = () => {
  *
  * @param {function} resolve
  * @param {function} reject
- * @param {integer} timeout time in ms. 0 will wait indefinitely.
+ * @param {number} timeout time in ms. 0 will wait indefinitely.
  * @param {string} timeoutMessage custom timeout message
  * @returns {number} the promise id
  * @private
  */
-const createPromise = (resolve, reject, timeout, timeoutMessage) => {
-  const promise = { resolve, reject };
+function createPromise(
+  resolve: Function,
+  reject: Function,
+  timeout: number,
+  timeoutMessage: string
+) {
+  const promise: GoferPromise = { resolve, reject };
   if (timeout !== 0) {
     promise.timeoutID = setTimeout(() => {
       reject(timeoutMessage);
@@ -54,10 +59,14 @@ const createPromise = (resolve, reject, timeout, timeoutMessage) => {
   const id = fmGoferUUID();
   window.fmGofer.promises[id] = promise;
   return id;
-};
+}
 
-const getPromise = (id) => window.fmGofer.promises[id];
-const deletePromise = (id) => delete window.fmGofer.promises[id];
+function getPromise(id: string) {
+  return window.fmGofer.promises[id];
+}
+function deletePromise(id: string) {
+  return delete window.fmGofer.promises[id];
+}
 
 /**
  * Resolve or reject a saved callback promise.
@@ -67,8 +76,9 @@ const deletePromise = (id) => delete window.fmGofer.promises[id];
  * @param {string} [failed=undefined] A truthy or falsey string. '0' string is treated as falsey. Pass in a truthy string to reject the promise.
  * @private
  */
-const runCallback = (id, parameter = undefined, failed = undefined) => {
+function runCallback(id: string, parameter?: string, failed?: string) {
   try {
+    // FM passes params as strings. JS treats '0' as truthy, but we want it to be falsey
     if (failed === '0') failed = '';
     const promise = getPromise(id);
     if (typeof promise === 'undefined')
@@ -80,25 +90,13 @@ const runCallback = (id, parameter = undefined, failed = undefined) => {
   } catch (error) {
     console.error(error);
   }
-};
+}
 
-/**
- * set the function name that FM will call to resolve/reject the promise
- *
- * @param {string} [callbackName='fmGoferD7738642C91848E08720EAC24EDDA483']
- * @private
- */
-const setCallbackName = (
-  callbackName = 'fmGoferD7738642C91848E08720EAC24EDDA483'
-) => {
-  if (typeof callbackName !== 'string' || !callbackName)
-    throw new Error('callbackName must be a non-empty string');
-  if (!fmGoferExists()) initializeGofer();
-  window[callbackName] = runCallback;
-  window.fmGofer.callbackName = callbackName;
-};
-
-const fmOnReady_PerformScriptWithOption = (script, param, option) => {
+function fmOnReady_PerformScriptWithOption(
+  script: string,
+  param?: any,
+  option?: ScriptOption
+) {
   // first try calling synchronously
   if (typeof window.FileMaker === 'object') {
     window.FileMaker.PerformScriptWithOption(script, param, option);
@@ -116,61 +114,55 @@ const fmOnReady_PerformScriptWithOption = (script, param, option) => {
       window.FileMaker.PerformScriptWithOption(script, param, option);
     }
   }, 5);
-};
-
-const defaultTimeout = 15000;
-const defaultTimeoutMessage = 'The FM script call timed out';
+}
 
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
  * @function
  *
  * @param {string} script name of script
- * @param {any} [parameter=undefined] parameter param you wish to send to fm. It will be nested in the `parameter` property of the script parameter
- * @param {number} [option=0] FM script option between 0 and 5
+ * @param {any} [parameter=undefined] parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
+ * @param {ScriptOption} option script option between 0 and 5
  * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
-export const PerformScriptWithOption = (
-  script,
-  parameter = undefined,
-  option = undefined,
-  timeout = defaultTimeout,
-  timeoutMessage = defaultTimeoutMessage
-) => {
+export function PerformScriptWithOption(
+  script: string,
+  parameter?: any,
+  option?: ScriptOption,
+  timeout: number = defaultTimeout,
+  timeoutMessage: string = defaultTimeoutMessage
+): Promise<string> {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
   if (typeof timeoutMessage !== 'string')
     throw new Error('timeoutMessage must be a string');
   return new Promise((resolve, reject) => {
-    if (!fmGoferExists()) initializeGofer();
-    if (!getCallbackName()) setCallbackName();
-
+    initializeGofer();
     const promiseID = createPromise(resolve, reject, timeout, timeoutMessage);
-    const callbackName = getCallbackName();
     const param = JSON.stringify({ promiseID, callbackName, parameter });
     fmOnReady_PerformScriptWithOption(script, param, option);
   });
-};
+}
 
 /**
  * Perform a FileMaker Script. FM can return a result by resolving or rejecting
  * @function
  *
  * @param {string} script name of script
- * @param {any} [parameter=undefined] you wish to send to fm. It will be nested in the `parameter` property of the script parameter
+ * @param {any} [parameter=undefined] parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
-export const PerformScript = (
-  script,
-  parameter = undefined,
-  timeout = defaultTimeout,
-  timeoutMessage = defaultTimeoutMessage
-) => {
+export function PerformScript(
+  script: string,
+  parameter: any = undefined,
+  timeout: number = defaultTimeout,
+  timeoutMessage: string = defaultTimeoutMessage
+): Promise<string> {
   const option = undefined;
   return PerformScriptWithOption(
     script,
@@ -179,7 +171,30 @@ export const PerformScript = (
     timeout,
     timeoutMessage
   );
-};
+}
+
+type ScriptOption = 0 | 1 | 2 | 3 | 4 | 5 | '0' | '1' | '2' | '3' | '4' | '5';
+interface GoferPromise {
+  resolve: Function;
+  reject: Function;
+  timeoutID?: ReturnType<typeof setTimeout>;
+}
+
+declare global {
+  interface Window {
+    FileMaker: {
+      PerformScript: Function;
+      PerformScriptWithOption: Function;
+    };
+    // https://flutterq.com/no-index-signature-with-a-parameter-of-type-string-was-found-on-type/
+    fmGofer: {
+      promises: {
+        [key: string]: GoferPromise;
+      };
+      callbackName: string;
+    };
+  }
+}
 
 const FMGofer = { PerformScript, PerformScriptWithOption };
 export { FMGofer as default };

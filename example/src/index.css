@@ -1,9 +1,13 @@
 /* App CSS */
 * {
 	font-family: Arial, Helvetica, sans-serif;
-	color: #282828;
+	/* color: #282828; */
+	color: white;
 	margin: 10px;
 	text-align: center;
+}
+body {
+	background-color: #223339;
 }
 button {
 	padding: 10pt;

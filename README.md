@@ -6,9 +6,9 @@ A framework for calling FileMaker scripts from JavaScript in web viewers and get
 
 ## Try it
 
-Check out `./example/FMGofer.fmp12`. You can find matching html code in `./example/example.html`. This example demostrates the callback, resolve, reject, and timeout capabilities of the library.
+Check out `./example/FMGofer.fmp12`. This example demostrates the callback, resolve, reject, and timeout capabilities of the library. You can rebuild the example code used in the fm file by running `npm run build-example`.
 
-## Installation
+## Install fm-gofer in your JS project
 
 ```bash
 npm install --save fm-gofer
@@ -27,14 +27,24 @@ require('fm-gofer/polyfill-ie11');
 const FMGofer = require('fm-gofer');
 ```
 
-Or copy into HTML:
+alternative ECMAScript module syntax:
 
-```html
-<script> (copy of ./dist/polyfill-ie11.min.js) </script>
-<script> (copy of ./dist/fm-gofer.min.js) </script>
+```javascript
+import * as FMGofer from 'fm-gofer';
 ```
 
-***IMPORTANT:*** `polyfill-ie11.js` (or `polyfill-ie11.min.js`) is only required for webviewers in Windows FileMaker Pro < 19.3.1, because Internet Explorer 11 doesn't support promises and newer FM versions use MS Edge. But if your app has a build step like Webpack/Rollup then you can omit `polyfill-ie11` and use your build system to polyfill promises instead. But if you're importing the library via `<script>` tags then `polyfill-ie11.min.js` is your friend.
+Or copy into yout HTML:
+
+```html
+<script>
+  (copy of ./dist/polyfill-ie11.min.js)
+</script>
+<script>
+  (copy of ./dist/fm-gofer.min.js)
+</script>
+```
+
+**_IMPORTANT:_** `polyfill-ie11.js` (or `polyfill-ie11.min.js`) is **only** required for webviewers in Windows FileMaker Pro < 19.3.1, because Internet Explorer 11 doesn't support promises and newer FM versions use MS Edge. But if your app has a build step like Webpack/Rollup then you can omit `polyfill-ie11` and use your build system to polyfill promises instead. But if you're importing the library via `<script>` tags then `polyfill-ie11.min.js` is your friend.
 
 ### Use fm-gofer
 
@@ -46,7 +56,13 @@ var b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
 
 // Set a custom timeout/timeout message if the default 15000 ms is too long
 var c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
-var d = await FMGofer.PerformScriptWithOption('FM Script', param, 5, 5000, 'timed out!');
+var d = await FMGofer.PerformScriptWithOption(
+  'FM Script',
+  param,
+  5,
+  5000,
+  'timed out!'
+);
 ```
 
 In your FileMaker script:

@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>fm-gofer example</title>
     <!-- Scroll to the body for example usage -->
-    <script src="../dist/polyfill-ie11.js"></script>
-    <script src="../dist/fm-gofer.js"></script>
-    <link rel="stylesheet" href="index.css"></link>
+    <link rel="stylesheet" href="index.css" inline></link>
+    <script src="../../dist/polyfill-ie11.js" inline></script>
+    <script src="../../dist/fm-gofer.js" inline></script>
   </head>
 
   <body>
@@ -26,12 +26,10 @@
           showLoader();
           FMGofer.PerformScript(script, param, timeout, timeoutMessage)
             .then(function (result) {
-              console.log('Entered .then block');
               hideLoader();
               updateMessage(result);
             })
             .catch(function (error) {
-              console.log('Entered .catch block');
               hideLoader();
               updateMessage(error);
             });
