@@ -18,24 +18,32 @@ npm install --save fm-gofer
 
 ### Import fm-gofer
 
-`require` in JS:
-
-```javascript
-// For NodeJS <12.7.0, you might need to use this longer version:
-// require('./node_modules/fm-gofer/dist/polyfill-ie11.js');
-require('fm-gofer/polyfill-ie11');
-const FMGofer = require('fm-gofer');
-```
-
-alternative ECMAScript module syntax:
+`import` syntax:
 
 ```javascript
 import * as FMGofer from 'fm-gofer';
 ```
 
-Or copy into yout HTML:
+`require` syntax:
+
+```javascript
+// polyfill only needed for FMP 19.2.2 and earlier
+require('fm-gofer/polyfill-ie11'); // or require('./node_modules/fm-gofer/dist/polyfill-ie11.js');
+const FMGofer = require('fm-gofer');
+```
+
+Or import from a CDN for convenience:
 
 ```html
+<!-- polyfill only needed for FMP 19.2.2 and earlier -->
+<script src="https://unpkg.com/fm-gofer/dist/polyfill-ie11.min.js"></script>
+<script src="https://unpkg.com/fm-gofer/dist/fm-gofer.min.js"></script>
+```
+
+Or copy into yout HTML for offline apps:
+
+```html
+<!-- polyfill only needed for FMP 19.2.2 and earlier -->
 <script>
   (copy of ./dist/polyfill-ie11.min.js)
 </script>
