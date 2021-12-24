@@ -51,12 +51,14 @@ function createPromise(
   timeoutMessage: string
 ) {
   const promise: GoferPromise = { resolve, reject };
+  const id = fmGoferUUID();
   if (timeout !== 0) {
     promise.timeoutID = setTimeout(() => {
+      if (window.fmGofer.promises[id].clearIntervalFn)
+        window.fmGofer.promises[id].clearIntervalFn();
       reject(timeoutMessage);
     }, timeout);
   }
-  const id = fmGoferUUID();
   window.fmGofer.promises[id] = promise;
   return id;
 }
@@ -114,6 +116,11 @@ function fmOnReady_PerformScriptWithOption(
       window.FileMaker.PerformScriptWithOption(script, param, option);
     }
   }, 5);
+  // return a function to allow the caller to stop trying to call FM
+  return function () {
+    clearTimeout(timeoutID);
+    clearInterval(intervalID);
+  };
 }
 
 /**
@@ -143,7 +150,13 @@ export function PerformScriptWithOption(
     initializeGofer();
     const promiseID = createPromise(resolve, reject, timeout, timeoutMessage);
     const param = JSON.stringify({ promiseID, callbackName, parameter });
-    fmOnReady_PerformScriptWithOption(script, param, option);
+    const clearIntervalFn = fmOnReady_PerformScriptWithOption(
+      script,
+      param,
+      option
+    );
+    if (window.fmGofer.promises?.[promiseID])
+      window.fmGofer.promises[promiseID].clearIntervalFn = clearIntervalFn;
   });
 }
 
@@ -178,6 +191,8 @@ interface GoferPromise {
   resolve: Function;
   reject: Function;
   timeoutID?: ReturnType<typeof setTimeout>;
+  // private function to tell FMGofer to stop attempting to call the FM script
+  clearIntervalFn?: Function;
 }
 
 declare global {
