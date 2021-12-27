@@ -78,6 +78,7 @@ function initializeGofer() {
 function storePromise(resolve, reject, timeout, timeoutMessage) {
     var promiseID = fmGoferUUID();
     var promise = { resolve: resolve, reject: reject };
+    var id = fmGoferUUID();
     if (timeout !== 0) {
         promise.timeoutID = setTimeout(function () {
             clearInterval(promise.fmOnReadyIntervalID);

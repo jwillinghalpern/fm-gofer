@@ -53,6 +53,7 @@ function storePromise(
 ) {
   const promiseID = fmGoferUUID();
   const promise: GoferPromise = { resolve, reject };
+  const id = fmGoferUUID();
   if (timeout !== 0) {
     promise.timeoutID = setTimeout(() => {
       clearInterval(promise.fmOnReadyIntervalID);
@@ -214,7 +215,6 @@ interface GoferPromise {
   resolve: Function;
   reject: Function;
   timeoutID?: ReturnType<typeof setTimeout>;
-  // private function to tell FMGofer to stop attempting to call the FM script
   fmOnReadyIntervalID?: ReturnType<typeof setTimeout>;
 }
 
