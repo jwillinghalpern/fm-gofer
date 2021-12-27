@@ -36,6 +36,7 @@ function initializeGofer() {
 /**
  * stores a callback promise and returns a promise id.
  * You can resolve or reject the promise using runCallback()
+ * the promise will be rejected automatically if timeout exceeded
  *
  * @param {function} resolve
  * @param {function} reject
@@ -44,29 +45,36 @@ function initializeGofer() {
  * @returns {number} the promise id
  * @private
  */
-function createPromise(
+function storePromise(
   resolve: Function,
   reject: Function,
   timeout: number,
   timeoutMessage: string
 ) {
+  const promiseID = fmGoferUUID();
   const promise: GoferPromise = { resolve, reject };
   const id = fmGoferUUID();
   if (timeout !== 0) {
     promise.timeoutID = setTimeout(() => {
-      if (window.fmGofer.promises[id].clearIntervalFn)
-        window.fmGofer.promises[id].clearIntervalFn();
+      clearInterval(promise.fmOnReadyIntervalID);
+      deletePromise(promiseID);
       reject(timeoutMessage);
     }, timeout);
   }
-  window.fmGofer.promises[id] = promise;
-  return id;
+  window.fmGofer.promises[promiseID] = promise;
+  return promiseID;
 }
 
 function getPromise(id: string) {
   return window.fmGofer.promises[id];
 }
 function deletePromise(id: string) {
+  const promise = window.fmGofer?.promises?.[id];
+  if (promise) {
+    clearTimeout(promise.timeoutID);
+    clearInterval(promise.fmOnReadyIntervalID);
+  }
+  // const { timeoutID, fmOnReadyIntervalID } = window.fmGofer?.promises?.[id];
   return delete window.fmGofer.promises[id];
 }
 
@@ -99,27 +107,33 @@ function fmOnReady_PerformScriptWithOption(
   param?: any,
   option?: ScriptOption
 ) {
-  // first try calling synchronously
-  if (typeof window.FileMaker === 'object') {
-    window.FileMaker.PerformScriptWithOption(script, param, option);
-    return;
-  }
-  // then wait for FileMaker to appear before calling
-  let timeoutID = setTimeout(() => {
-    clearInterval(intervalID);
-    throw new Error('window.FileMaker not found');
-  }, 2000);
-  let intervalID = setInterval(() => {
+  let intervalID: ReturnType<typeof setInterval>;
+  const promise = new Promise<void>((resolve, reject) => {
+    // check if window.FileMaker already exists
     if (typeof window.FileMaker === 'object') {
-      clearTimeout(timeoutID);
-      clearInterval(intervalID);
       window.FileMaker.PerformScriptWithOption(script, param, option);
+      return;
     }
-  }, 5);
-  // return a function to allow the caller to stop trying to call FM
-  return function () {
-    clearTimeout(timeoutID);
-    clearInterval(intervalID);
+    // else, wait for FileMaker to appear
+    const intervalMs = 5;
+    const maxWaitMs = 2000;
+    let totalWaited = 0;
+    intervalID = setInterval(() => {
+      totalWaited += intervalMs;
+      if (totalWaited > maxWaitMs) {
+        clearInterval(intervalID);
+        reject(`window.FileMaker not found within ${maxWaitMs} ms`);
+      }
+      if (typeof window.FileMaker === 'object') {
+        clearInterval(intervalID);
+        window.FileMaker.PerformScriptWithOption(script, param, option);
+        resolve();
+      }
+    }, intervalMs);
+  });
+  return {
+    promise: promise,
+    intervalID: intervalID,
   };
 }
 
@@ -146,17 +160,27 @@ export function PerformScriptWithOption(
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
   if (typeof timeoutMessage !== 'string')
     throw new Error('timeoutMessage must be a string');
-  return new Promise((resolve, reject) => {
+
+  return new Promise(async (resolve, reject) => {
     initializeGofer();
-    const promiseID = createPromise(resolve, reject, timeout, timeoutMessage);
+    // store resolve and reject for calling outside this scope
+    const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
     const param = JSON.stringify({ promiseID, callbackName, parameter });
-    const clearIntervalFn = fmOnReady_PerformScriptWithOption(
-      script,
-      param,
-      option
-    );
-    if (window.fmGofer.promises?.[promiseID])
-      window.fmGofer.promises[promiseID].clearIntervalFn = clearIntervalFn;
+    // try performing FM script.
+    try {
+      const { promise, intervalID } = fmOnReady_PerformScriptWithOption(
+        script,
+        param,
+        option
+      );
+      // store the interval id in the gofer promise so it can clear the interval
+      // if the custom timeout is exceeded
+      window.fmGofer.promises[promiseID].fmOnReadyIntervalID = intervalID;
+      await promise;
+    } catch (error) {
+      deletePromise(promiseID);
+      reject(error);
+    }
   });
 }
 
@@ -191,8 +215,7 @@ interface GoferPromise {
   resolve: Function;
   reject: Function;
   timeoutID?: ReturnType<typeof setTimeout>;
-  // private function to tell FMGofer to stop attempting to call the FM script
-  clearIntervalFn?: Function;
+  fmOnReadyIntervalID?: ReturnType<typeof setTimeout>;
 }
 
 declare global {
