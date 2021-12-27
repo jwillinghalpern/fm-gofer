@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 
+import 'regenerator-runtime/runtime';
+
 import {
   PerformScript,
   PerformScriptWithOption,
@@ -158,31 +160,31 @@ describe('--- CALLBACKS ---', () => {
 });
 
 describe('--- PROMISES ---', () => {
-  describe('createPromise', () => {
-    const createPromise = __get__('createPromise');
+  describe('storePromise', () => {
+    const storePromise = __get__('storePromise');
     beforeEach(() => {
       window.fmGofer = { promises: {}, callbackName: null };
     });
     const fn = () => {};
 
     it('should return a string id', () => {
-      expect(typeof createPromise(fn, fn)).toBe('string');
+      expect(typeof storePromise(fn, fn)).toBe('string');
     });
 
     it('should store an object in promises with the key returned', () => {
-      const id = createPromise(fn, fn);
+      const id = storePromise(fn, fn);
       expect(typeof window.fmGofer.promises[id]).toBe('object');
     });
 
     it('object should have resolve, reject, timeoutID keys', () => {
-      const id = createPromise(fn, fn);
+      const id = storePromise(fn, fn);
       expect(window.fmGofer.promises[id]).toHaveProperty('resolve');
       expect(window.fmGofer.promises[id]).toHaveProperty('reject');
       expect(window.fmGofer.promises[id]).toHaveProperty('timeoutID');
     });
 
     it('should not have a timeoutID if you pass zero as timeout', () => {
-      const id = createPromise(fn, fn, 0);
+      const id = storePromise(fn, fn, 0);
       expect(window.fmGofer.promises[id]).not.toHaveProperty('timeoutID');
     });
 
@@ -190,7 +192,7 @@ describe('--- PROMISES ---', () => {
       const fmGoferUUID = __get__('fmGoferUUID');
       const fmGoferUUIDFake = jest.fn().mockReturnValue('FAKE_UUID');
       __set__('fmGoferUUID', fmGoferUUIDFake);
-      const res = createPromise(fn, fn, 0);
+      const res = storePromise(fn, fn, 0);
       expect(res).toStrictEqual('FAKE_UUID');
       expect(fmGoferUUIDFake).toBeCalled();
       __set__('fmGoferUUID', fmGoferUUID);
@@ -199,7 +201,7 @@ describe('--- PROMISES ---', () => {
     it('should reject if timeout exceeded', () => {
       const reject = jest.fn();
       const clock = jest.useFakeTimers();
-      createPromise(() => {}, reject, 10, 'default message');
+      storePromise(() => {}, reject, 10, 'default message');
       clock.advanceTimersByTime(11);
       expect(reject).toBeCalled();
       jest.useRealTimers();
@@ -222,6 +224,28 @@ describe('--- PROMISES ---', () => {
       window.fmGofer = { promises: { [id]: 'abcde' } };
       deletePromise(id);
       expect(window.fmGofer.promises[id]).toBeUndefined();
+    });
+
+    it('should call clearTimeout and clearInterval if ids exist', () => {
+      const clearIntervalSpy = jest.spyOn(window, 'clearInterval');
+      const clearTimeoutSpy = jest.spyOn(window, 'clearTimeout');
+      const promiseID = 12345;
+      const fmOnReadyIntervalID = 123;
+      const timeoutID = 234;
+      window.fmGofer = {
+        promises: {
+          [promiseID]: {
+            fmOnReadyIntervalID,
+            timeoutID,
+          },
+        },
+      };
+      deletePromise(promiseID);
+      expect(clearIntervalSpy).toBeCalledWith(fmOnReadyIntervalID);
+      expect(clearTimeoutSpy).toBeCalledWith(timeoutID);
+      clearIntervalSpy.mockClear();
+      clearTimeoutSpy.mockClear();
+      jest.time;
     });
 
     it('should return true', () => {
@@ -325,37 +349,36 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       __set__('getCallbackName', getCallbackName);
     });
 
-    it('should call FileMaker.PerformScriptWithOption with args', () => {
+    it('should call FileMaker.PerformScriptWithOption with args', async () => {
+      const script = 'script';
+      const param = 'param';
+      const option = 5;
+      const timeout = 500;
+      const timeoutMessage = 'custom';
       const callbackName = __get__('callbackName');
-      const fmGoferExists = __get__('fmGoferExists');
-      const fmGoferExistsFake = jest.fn().mockReturnValue(true);
-      __set__('fmGoferExists', fmGoferExistsFake);
-      const createPromise = __get__('createPromise');
-      const createPromiseFake = jest
-        .fn('testPromiseID')
-        .mockReturnValue('testPromiseID');
-      __set__('createPromise', createPromiseFake);
-      const fmOnReady_PSWO = __get__('fmOnReady_PerformScriptWithOption');
-      const fmOnReady_PSWOSpy = jest.fn();
-      __set__('fmOnReady_PerformScriptWithOption', fmOnReady_PSWOSpy);
-
-      const scriptName = 'test script';
-      const scriptOption = 3;
-      PerformScriptWithOption(scriptName, 'test param', scriptOption);
-      const param = {
-        promiseID: 'testPromiseID',
-        callbackName: callbackName,
-        parameter: 'test param',
+      const promiseID = 'testPromiseID';
+      const fmGoferUUID = __get__('fmGoferUUID');
+      const fmGoferUUIDFake = jest.fn().mockReturnValue(promiseID);
+      __set__('fmGoferUUID', fmGoferUUIDFake);
+      jest.useFakeTimers();
+      const goferParam = {
+        script,
+        callbackName,
+        promiseID,
       };
-      expect(fmOnReady_PSWOSpy).toBeCalled();
-      expect(fmOnReady_PSWOSpy).toBeCalledWith(
-        scriptName,
-        JSON.stringify(param),
-        scriptOption
-      );
-      __set__('fmGoferExists', fmGoferExists);
-      __set__('createPromise', createPromise);
-      __set__('fmOnReady_PerformScriptWithOption', fmOnReady_PSWO);
+      const mock = jest.fn();
+      window.Filemaker = {
+        PerformScriptWithOption: mock,
+        PerformScript: mock,
+      };
+      try {
+        PerformScriptWithOption(script, param, option, timeout, timeoutMessage);
+        jest.advanceTimersByTime(1);
+      } catch (err) {
+        expect(mock).toBeCalledWith(script, goferParam, option);
+      }
+      jest.useRealTimers();
+      __set__('fmGoferUUID', fmGoferUUID);
     });
   });
 
@@ -370,8 +393,7 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       fmOnReady_PerformScriptWithOption(...params);
       expect(spy).toBeCalledWith(...params);
     });
-
-    it('should call FileMaker.PerformScriptWithOption if FM is ready in less than 2000 ms', () => {
+    it('should call FileMaker.PerformScriptWithOption if FM becomes ready in less than 2000 ms', () => {
       const spy = jest.fn();
       delete window.FileMaker;
       const clock = jest.useFakeTimers();
@@ -385,48 +407,117 @@ describe('--- PERFORMING SCRIPTS ---', () => {
       expect(spy).toBeCalled();
     });
 
-    it('should throw Error if window.FileMaker is not ready in less than 2000 ms', () => {
-      const spy = jest.fn();
+    it('should return {intervalID, promise}', () => {
       delete window.FileMaker;
-      const wrapper = () => {
-        const clock = jest.useFakeTimers();
-        fmOnReady_PerformScriptWithOption('test script', 'test param', 3);
-        // The function only checks for 2000ms, so this should trigger an error.
-        clock.advanceTimersByTime(2100);
-        window.FileMaker = { PerformScriptWithOption: spy };
-        // go forward 9ms so the setInterval function runs again (it runs every 5ms)
-        clock.advanceTimersByTime(9);
-        jest.useRealTimers();
-      };
-      expect(wrapper).toThrow();
-      expect(spy).not.toBeCalled();
+      const res = fmOnReady_PerformScriptWithOption('script', 'param', 0);
+      expect(typeof res?.promise?.then).toBe('function');
+      expect(res).toHaveProperty('intervalID');
+      expect(typeof res?.intervalID).toBe('number');
     });
-
-    it('should return a clearIntervalFn function', () => {
-      const clearIntervalFn = fmOnReady_PerformScriptWithOption(
-        'script',
-        'param',
-        '3'
-      );
-      expect(typeof clearIntervalFn).toBe('function');
+    it('the promise should reject if FileMaker not ready in <2s', () => {
+      jest.useFakeTimers();
+      const { promise } = fmOnReady_PerformScriptWithOption('s', 'p', 0);
+      jest.advanceTimersByTime(2010);
+      expect.assertions(1);
+      return expect(promise).rejects.toContain('window.FileMaker not found');
     });
+    it('the promise should resolve with undefined if FileMaker is ready in <2s', () => {
+      jest.useFakeTimers();
+      // this timeout mimics FileMaker appearing on the window after 500ms
+      setTimeout(() => {
+        window.FileMaker = {
+          PerformScript: () => {},
+          PerformScriptWithOption: () => {},
+        };
+      }, 500);
+      const { promise } = fmOnReady_PerformScriptWithOption('s', 'p', 0);
+      jest.runAllTimers();
+      expect.assertions(1);
+      // returns void promise
+      return expect(promise).resolves.toBeUndefined();
+    });
+  });
 
-    it('should call the clearIntervalFn function if promise is rejected due to timeout', () => {
-      const clearIntervalFnMock = jest.fn();
-      const mock = jest.fn().mockReturnValue(clearIntervalFnMock);
-      __set__('fmOnReady_PerformScriptWithOption', mock);
-      const clock = jest.useFakeTimers();
-      // custom timeout of 1000 ms. This is less than the 2000ms that FMGofer
-      // will wait for FileMaker.PerformScript to appear, and therefore we can
-      // check if a quick custom timeout trigger clearIntervalFn() to be called.
-      PerformScript('script', 'param', 1000).catch((err) => {});
-      clock.advanceTimersByTime(1020);
-      expect(clearIntervalFnMock).toBeCalled();
+  describe('Timeouts', () => {
+    beforeAll(() => {});
+    beforeEach(() => {
+      jest.useFakeTimers();
+      delete window.FileMaker;
+    });
+    afterAll(() => {
       jest.useRealTimers();
-      __set__(
-        'fmOnReady_PerformScriptWithOption',
-        fmOnReady_PerformScriptWithOption
-      );
+    });
+    it('should call deletePromise if custom timeout elapses', async () => {
+      const deletePromise = __get__('deletePromise');
+      const deletePromiseSpy = jest.fn();
+      __set__('deletePromise', deletePromiseSpy);
+      const defaultTimeoutMessage = __get__('defaultTimeoutMessage');
+      // custom timeout of 1000 ms, which is less than the 2000ms that FMGofer
+      // will wait for FileMaker.PerformScript to appear. Therefore we can
+      // check if a quick custom timeout causes clearInterval() to be called.
+      // we can also confirm that it does not throw?
+      // const x = PerformScript('script', 'param', 1000);
+      try {
+        const promise = PerformScript('script', 'param', 1000);
+        jest.advanceTimersByTime(1001);
+        await promise;
+      } catch (error) {
+        expect(error).toMatch(defaultTimeoutMessage);
+        expect(deletePromiseSpy).toBeCalled();
+      }
+      __set__('deletePromise', deletePromise);
+    });
+    it('should timeout in < 2s if custom timeout is < 2s', async () => {
+      const timeStart = Date.now();
+      try {
+        const promise = PerformScript('script', 'param', 1000);
+        jest.advanceTimersByTime(1000);
+        await promise;
+        // the promise should be rejected already and this next piece won't run
+      } catch (error) {
+        const runtime = Date.now() - timeStart;
+        expect(runtime).toBeLessThan(2000);
+      }
+    });
+    it('should reject before the custom timeout if FileMaker is not found in 2s', async () => {
+      const timeStart = Date.now();
+      try {
+        // custom timeout > 2s
+        const promise = PerformScript('script', 'param', 3000);
+        // wait just over 2 seconds and it should reject
+        jest.advanceTimersByTime(2010);
+        await promise;
+        // the promise should be rejected already and this next piece won't run
+      } catch (error) {
+        const runtime = Date.now() - timeStart;
+        expect(runtime).toBeLessThan(3000);
+      }
+    });
+    it('should reject after the custom timeout if FM is found but does not callback to JS in time', async () => {
+      const timeStart = Date.now();
+      const customTimeout = 2400;
+      const customTimeoutMessage = Math.random().toString();
+      try {
+        // this timeout mimics FileMaker appearing on the window after 500ms
+        setTimeout(() => {
+          window.FileMaker = {
+            PerformScript: () => {},
+            PerformScriptWithOption: () => {},
+          };
+        }, 500);
+        const promise = PerformScript(
+          'script',
+          'param',
+          customTimeout,
+          customTimeoutMessage
+        );
+        jest.runAllTimers();
+        await promise;
+      } catch (error) {
+        const runtime = Date.now() - timeStart;
+        expect(runtime).toBeGreaterThanOrEqual(customTimeout);
+        expect(error).toBe(customTimeoutMessage);
+      }
     });
   });
 });
