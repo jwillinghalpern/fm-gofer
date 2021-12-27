@@ -53,7 +53,6 @@ function storePromise(
 ) {
   const promiseID = fmGoferUUID();
   const promise: GoferPromise = { resolve, reject };
-  const id = fmGoferUUID();
   if (timeout !== 0) {
     promise.timeoutID = setTimeout(() => {
       clearInterval(promise.fmOnReadyIntervalID);
