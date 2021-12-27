@@ -514,32 +514,5 @@ describe('--- PERFORMING SCRIPTS ---', () => {
         expect(error).toBe(customTimeoutMessage);
       }
     });
-
-    it('should return a clearIntervalFn function', () => {
-      const clearIntervalFn = fmOnReady_PerformScriptWithOption(
-        'script',
-        'param',
-        '3'
-      );
-      expect(typeof clearIntervalFn).toBe('function');
-    });
-
-    it('should call the clearIntervalFn function if promise is rejected due to timeout', () => {
-      const clearIntervalFnMock = jest.fn();
-      const mock = jest.fn().mockReturnValue(clearIntervalFnMock);
-      __set__('fmOnReady_PerformScriptWithOption', mock);
-      const clock = jest.useFakeTimers();
-      // custom timeout of 1000 ms. This is less than the 2000ms that FMGofer
-      // will wait for FileMaker.PerformScript to appear, and therefore we can
-      // check if a quick custom timeout trigger clearIntervalFn() to be called.
-      PerformScript('script', 'param', 1000).catch((err) => {});
-      clock.advanceTimersByTime(1020);
-      expect(clearIntervalFnMock).toBeCalled();
-      jest.useRealTimers();
-      __set__(
-        'fmOnReady_PerformScriptWithOption',
-        fmOnReady_PerformScriptWithOption
-      );
-    });
   });
 });
