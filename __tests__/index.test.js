@@ -20,7 +20,6 @@ describe('--- UTILS ---', () => {
 
     it('should only contain letters and numbers', () => {
       const id = fmGoferUUID();
-      // assert.match(id, /^[a-z0-9]+$/i);
       expect(id).toMatch(/^[a-z0-9]+$/i);
     });
 
@@ -67,7 +66,6 @@ describe('--- FMGOFER WINDOW OBJECT ---', () => {
 
     it('should create fmGofer on the window', () => {
       initializeGofer();
-      // assert.isObject(window.fmGofer, 'should be object');
       expect(typeof window.fmGofer).toBe('object');
     });
 
@@ -85,13 +83,10 @@ describe('--- FMGOFER WINDOW OBJECT ---', () => {
 
 describe('--- CALLBACKS ---', () => {
   describe('runCallback', () => {
-    // const resolve = sinon.spy();
     const resolve = jest.fn();
-    // const reject = sinon.spy();
     const reject = jest.fn();
     const runCallback = __get__('runCallback');
     const deletePromise = __get__('deletePromise');
-    // const deletePromiseSpy = sinon.spy(deletePromise);
     const deletePromiseSpy = jest.fn();
     const getPromise = __get__('getPromise');
     beforeEach(() => {
