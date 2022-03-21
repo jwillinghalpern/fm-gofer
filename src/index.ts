@@ -164,7 +164,12 @@ export function PerformScriptWithOption(
     initializeGofer();
     // store resolve and reject for calling outside this scope
     const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
-    const param = JSON.stringify({ promiseID, callbackName, parameter });
+    const paramObj: GoferParam = {
+      promiseID,
+      callbackName,
+      parameter,
+    };
+    const param = JSON.stringify(paramObj);
     // try performing FM script.
     try {
       const { promise, intervalID } = fmOnReady_PerformScriptWithOption(
@@ -215,6 +220,12 @@ interface GoferPromise {
   reject: Function;
   timeoutID?: ReturnType<typeof setTimeout>;
   fmOnReadyIntervalID?: ReturnType<typeof setTimeout>;
+}
+
+export interface GoferParam {
+  callbackName: string;
+  promiseID: string;
+  parameter: any;
 }
 
 declare global {

@@ -164,13 +164,18 @@
         if (typeof timeoutMessage !== 'string')
             throw new Error('timeoutMessage must be a string');
         return new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
-            var promiseID, param, _a, promise, intervalID, error_1;
+            var promiseID, paramObj, param, _a, promise, intervalID, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
                         initializeGofer();
                         promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
-                        param = JSON.stringify({ promiseID: promiseID, callbackName: callbackName, parameter: parameter });
+                        paramObj = {
+                            promiseID: promiseID,
+                            callbackName: callbackName,
+                            parameter: parameter
+                        };
+                        param = JSON.stringify(paramObj);
                         _b.label = 1;
                     case 1:
                         _b.trys.push([1, 3, , 4]);

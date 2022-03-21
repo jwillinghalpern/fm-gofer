@@ -28,6 +28,11 @@ interface GoferPromise {
     timeoutID?: ReturnType<typeof setTimeout>;
     fmOnReadyIntervalID?: ReturnType<typeof setTimeout>;
 }
+export interface GoferParam {
+    callbackName: string;
+    promiseID: string;
+    parameter: any;
+}
 declare global {
     interface Window {
         FileMaker: {
