@@ -36,8 +36,8 @@ export interface GoferParam {
 declare global {
     interface Window {
         FileMaker: {
-            PerformScript: Function;
-            PerformScriptWithOption: Function;
+            PerformScript: (scriptName: string, parameter?: string) => void;
+            PerformScriptWithOption: (scriptName: string, parameter?: string, option?: ScriptOption) => void;
         };
         fmGofer: {
             promises: {
