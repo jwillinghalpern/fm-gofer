@@ -231,8 +231,12 @@ export interface GoferParam {
 declare global {
   interface Window {
     FileMaker: {
-      PerformScript: Function;
-      PerformScriptWithOption: Function;
+      PerformScript: (scriptName: string, parameter?: string) => void;
+      PerformScriptWithOption: (
+        scriptName: string,
+        parameter?: string,
+        option?: ScriptOption
+      ) => void;
     };
     // https://flutterq.com/no-index-signature-with-a-parameter-of-type-string-was-found-on-type/
     fmGofer: {
