@@ -1,6 +1,6 @@
 const defaultTimeout = 15000;
 const defaultTimeoutMessage = 'The FM script call timed out';
-const callbackName = 'fmGoferD7738642C91848E08720EAC24EDDA483';
+const callbackName = 'fmGoferCallbackD7738642C91848E08720EAC24EDDA483';
 
 /**
  * generates a uuid without hyphens. It uses Math.random, so it's not *that* unique.
@@ -55,7 +55,8 @@ function storePromise(
   const promise: GoferPromise = { resolve, reject };
   if (timeout !== 0) {
     promise.timeoutID = setTimeout(() => {
-      clearInterval(promise.fmOnReadyIntervalID);
+      if (promise.fmOnReadyIntervalID)
+        clearInterval(promise.fmOnReadyIntervalID);
       deletePromise(promiseID);
       reject(timeoutMessage);
     }, timeout);
@@ -70,8 +71,8 @@ function getPromise(id: string) {
 function deletePromise(id: string) {
   const promise = window.fmGofer?.promises?.[id];
   if (promise) {
-    clearTimeout(promise.timeoutID);
-    clearInterval(promise.fmOnReadyIntervalID);
+    if (promise.timeoutID) clearTimeout(promise.timeoutID);
+    if (promise.fmOnReadyIntervalID) clearInterval(promise.fmOnReadyIntervalID);
   }
   // const { timeoutID, fmOnReadyIntervalID } = window.fmGofer?.promises?.[id];
   return delete window.fmGofer.promises[id];
@@ -228,6 +229,12 @@ export interface GoferParam {
   parameter: any;
 }
 
+export type GoferCallback = (
+  promiseID: string,
+  result?: string, // enforce string to emulate FM's behavior this will ensure that you remember to use JSON.parse() in any code that uses FMGofer.PerformScript*
+  isError?: '1' | '0' | '' | boolean // even though fm can only return a string or undefined, I'm allowing boolean for convenience when using this library with fm-mock. It's much easier to pass true or false to simulate errors than '1' or '0'
+) => void;
+
 declare global {
   interface Window {
     FileMaker: {
@@ -241,7 +248,7 @@ declare global {
     // https://flutterq.com/no-index-signature-with-a-parameter-of-type-string-was-found-on-type/
     fmGofer: {
       promises: {
-        [key: string]: GoferPromise;
+        [promiseID: string]: GoferPromise;
       };
       callbackName: string;
     };
