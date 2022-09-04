@@ -33,6 +33,8 @@ export interface GoferParam {
     promiseID: string;
     parameter: any;
 }
+export declare type GoferCallback = (promiseID: string, result?: string, // enforce string to emulate FM's behavior this will ensure that you remember to use JSON.parse() in any code that uses FMGofer.PerformScript*
+isError?: '1' | '0' | '' | boolean) => void;
 declare global {
     interface Window {
         FileMaker: {
@@ -41,7 +43,7 @@ declare global {
         };
         fmGofer: {
             promises: {
-                [key: string]: GoferPromise;
+                [promiseID: string]: GoferPromise;
             };
             callbackName: string;
         };

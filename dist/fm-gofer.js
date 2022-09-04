@@ -59,7 +59,7 @@
 
     var defaultTimeout = 15000;
     var defaultTimeoutMessage = 'The FM script call timed out';
-    var callbackName = 'fmGoferD7738642C91848E08720EAC24EDDA483';
+    var callbackName = 'fmGoferCallbackD7738642C91848E08720EAC24EDDA483';
     function fmGoferUUID() {
         var template = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx';
         return template.replace(/[xy]/g, function (c) {
@@ -86,7 +86,8 @@
         var promise = { resolve: resolve, reject: reject };
         if (timeout !== 0) {
             promise.timeoutID = setTimeout(function () {
-                clearInterval(promise.fmOnReadyIntervalID);
+                if (promise.fmOnReadyIntervalID)
+                    clearInterval(promise.fmOnReadyIntervalID);
                 deletePromise(promiseID);
                 reject(timeoutMessage);
             }, timeout);
@@ -101,8 +102,10 @@
         var _a, _b;
         var promise = (_b = (_a = window.fmGofer) === null || _a === void 0 ? void 0 : _a.promises) === null || _b === void 0 ? void 0 : _b[id];
         if (promise) {
-            clearTimeout(promise.timeoutID);
-            clearInterval(promise.fmOnReadyIntervalID);
+            if (promise.timeoutID)
+                clearTimeout(promise.timeoutID);
+            if (promise.fmOnReadyIntervalID)
+                clearInterval(promise.fmOnReadyIntervalID);
         }
         return delete window.fmGofer.promises[id];
     }
