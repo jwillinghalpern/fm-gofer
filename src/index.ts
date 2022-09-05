@@ -81,22 +81,22 @@ function deletePromise(id: string) {
 /**
  * Resolve or reject a saved callback promise.
  *
- * @param {string} id promise id
- * @param {string} [parameter=undefined] any parameter you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
- * @param {string} [failed=undefined] A truthy or falsey string. '0' string is treated as falsey. Pass in a truthy string to reject the promise.
+ * @param {string} promiseID promise id
+ * @param {string} [result=undefined] any parameter you wish to return to the webapp. NOTE, FM passes all function params as text, so if you return JSON, be sure to JSON.parse() it.
+ * @param {string} [isError=undefined] A truthy or falsey string. '0' string is treated as falsey. Pass in a truthy string to reject the promise.
  * @private
  */
-function runCallback(id: string, parameter?: string, failed?: string) {
+function runCallback(promiseID: string, result?: string, isError?: IsError) {
   try {
     // FM passes params as strings. JS treats '0' as truthy, but we want it to be falsey
-    if (failed === '0') failed = '';
-    const promise = getPromise(id);
+    if (isError === '0') isError = '';
+    const promise = getPromise(promiseID);
     if (typeof promise === 'undefined')
-      throw new Error(`No promise found for promiseID ${id}.`);
+      throw new Error(`No promise found for promiseID ${promiseID}.`);
     if (promise.timeoutID) clearTimeout(promise.timeoutID);
-    if (!!failed) promise.reject(parameter);
-    else promise.resolve(parameter);
-    deletePromise(id);
+    if (!!isError) promise.reject(result);
+    else promise.resolve(result);
+    deletePromise(promiseID);
   } catch (error) {
     console.error(error);
   }
@@ -224,19 +224,21 @@ interface GoferPromise {
 }
 
 export interface GoferParam {
-  callbackName: string;
+  callbackName: typeof callbackName;
   promiseID: string;
   parameter: any;
 }
 
+type IsError = '1' | '0' | '' | boolean;
 export type GoferCallback = (
   promiseID: string,
   result?: string, // enforce string to emulate FM's behavior this will ensure that you remember to use JSON.parse() in any code that uses FMGofer.PerformScript*
-  isError?: '1' | '0' | '' | boolean // even though fm can only return a string or undefined, I'm allowing boolean for convenience when using this library with fm-mock. It's much easier to pass true or false to simulate errors than '1' or '0'
+  isError?: IsError // even though fm can only return a string or undefined, I'm allowing boolean for convenience when using this library with fm-mock. It's much easier to pass true or false to simulate errors than '1' or '0'
 ) => void;
 
 declare global {
   interface Window {
+    [callbackName]: GoferCallback;
     FileMaker: {
       PerformScript: (scriptName: string, parameter?: string) => void;
       PerformScriptWithOption: (

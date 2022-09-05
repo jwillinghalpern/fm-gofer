@@ -1,3 +1,4 @@
+declare const callbackName = "fmGoferCallbackD7738642C91848E08720EAC24EDDA483";
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
  * @function
@@ -29,14 +30,16 @@ interface GoferPromise {
     fmOnReadyIntervalID?: ReturnType<typeof setTimeout>;
 }
 export interface GoferParam {
-    callbackName: string;
+    callbackName: typeof callbackName;
     promiseID: string;
     parameter: any;
 }
+declare type IsError = '1' | '0' | '' | boolean;
 export declare type GoferCallback = (promiseID: string, result?: string, // enforce string to emulate FM's behavior this will ensure that you remember to use JSON.parse() in any code that uses FMGofer.PerformScript*
-isError?: '1' | '0' | '' | boolean) => void;
+isError?: IsError) => void;
 declare global {
     interface Window {
+        [callbackName]: GoferCallback;
         FileMaker: {
             PerformScript: (scriptName: string, parameter?: string) => void;
             PerformScriptWithOption: (scriptName: string, parameter?: string, option?: ScriptOption) => void;

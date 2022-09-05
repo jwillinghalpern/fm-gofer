@@ -103,20 +103,20 @@ function deletePromise(id) {
     }
     return delete window.fmGofer.promises[id];
 }
-function runCallback(id, parameter, failed) {
+function runCallback(promiseID, result, isError) {
     try {
-        if (failed === '0')
-            failed = '';
-        var promise = getPromise(id);
+        if (isError === '0')
+            isError = '';
+        var promise = getPromise(promiseID);
         if (typeof promise === 'undefined')
-            throw new Error("No promise found for promiseID ".concat(id, "."));
+            throw new Error("No promise found for promiseID ".concat(promiseID, "."));
         if (promise.timeoutID)
             clearTimeout(promise.timeoutID);
-        if (!!failed)
-            promise.reject(parameter);
+        if (!!isError)
+            promise.reject(result);
         else
-            promise.resolve(parameter);
-        deletePromise(id);
+            promise.resolve(result);
+        deletePromise(promiseID);
     }
     catch (error) {
         console.error(error);
