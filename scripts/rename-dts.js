@@ -1,6 +1,6 @@
-const fs = require('fs');
+import { rename } from 'fs'
 
-fs.rename('./dist/index.d.ts', './dist/fm-gofer.d.ts', (err) => {
+rename('./dist/index.d.ts', './dist/fm-gofer.d.ts', (err) => {
   if (err) throw err;
   console.log('Rename complete!');
 });

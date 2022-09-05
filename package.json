@@ -1,26 +1,25 @@
 {
   "name": "fm-gofer",
+  "type": "module",
   "version": "1.6.2",
   "description": "Framework for calling FileMaker scripts from a webviewer and retrieving results using callback promises.",
   "homepage": "https://github.com/jwillinghalpern/fm-gofer#readme",
   "issues": "https://github.com/jwillinghalpern/fm-gofer/issues",
   "source": "src/index.ts",
-  "main": "dist/fm-gofer.js",
-  "module": "dist/fm-gofer.mjs",
+  "main": "./dist/fm-gofer.umd.cjs",
+  "module": "./dist/fm-gofer.js",
   "types": "dist/fm-gofer.d.ts",
   "browserslist": "defaults",
   "exports": {
     ".": {
-      "import": "./dist/fm-gofer.mjs",
-      "require": "./dist/fm-gofer.js",
+      "import": "./dist/fm-gofer.js",
+      "require": "./dist/fm-gofer.umd.cjs",
       "default": "./dist/fm-gofer.js"
     },
     "./polyfill-ie11": "./dist/polyfill-ie11.js"
   },
   "files": [
-    "dist/*",
-    "__tests__/*",
-    "src/*"
+    "dist"
   ],
   "keywords": [
     "filemaker",
@@ -70,5 +69,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.33.0",
     "typescript": "^4.8.2",
+    "vite": "^3.0.9",
+    "vitest": "^0.23.0"
   }
 }

@@ -1,0 +1,11 @@
+{
+	"compilerOptions": {
+		"outDir": "dist",
+		"declaration": true,
+		"declarationDir": "dist",
+		// "outFile": "dist/fm-gofer.d.ts"
+	},
+	"include": [
+		"src"
+	],
+}
