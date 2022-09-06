@@ -34,7 +34,7 @@ Or import from a CDN for convenience:
 
 ```html
 <!-- This will set a global window property FMGofer -->
-<script src="https://unpkg.com/fm-gofer/dist/fm-gofer.min.js"></script>
+<script src="https://unpkg.com/fm-gofer/dist/fm-gofer.umd.cjs"></script>
 ```
 
 Or copy into yout HTML for offline apps:
