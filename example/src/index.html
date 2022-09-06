@@ -6,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>fm-gofer example</title>
     <!-- Scroll to the body for example usage -->
-    <link rel="stylesheet" href="index.css" inline></link>
-    <script src="../../dist/polyfill-ie11.js" inline></script>
-    <script src="../../dist/fm-gofer.js" inline></script>
+    <link rel="stylesheet" href="index.css">
+    <script type="module">
+      import FMGofer from '../../dist/fm-gofer'
+      window.FMGofer = FMGofer;
+    </script>
   </head>
 
   <body>
@@ -27,11 +29,11 @@
           FMGofer.PerformScript(script, param, timeout, timeoutMessage)
             .then(function (result) {
               hideLoader();
-              updateMessage(result);
+              updateMessage(result, '😍');
             })
             .catch(function (error) {
               hideLoader();
-              updateMessage(error);
+              updateMessage(error, '😵');
             });
         }
         function showLoader() {
@@ -40,8 +42,12 @@
         function hideLoader() {
           document.getElementById('loader').hidden = true;
         }
-        function updateMessage(message) {
-          document.getElementById('message').innerText = message;
+        function updateMessage(message, emoji) {
+          var html = message;
+          if (emoji) {
+            html += '<div style="font-size: 4rem;">' + emoji + '</div>';
+          }
+          document.getElementById('message').innerHTML = html;
         }
 
         document.getElementById('myButton').onclick = handleClick;
