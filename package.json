@@ -31,6 +31,10 @@
     "callback"
   ],
   "scripts": {
+    "test": "vitest",
+    "test:verbose": "vitest --reporter verbose",
+    "coverage": "vitest run --coverage",
+    "build": "vite build && tsc --emitDeclarationOnly && node scripts/rename-dts.js",
     "build:example": "vite build example/src --config ./vite.config.example.ts && touch example/dist/HTML_FOR_FM.txt || echo \"\\nbe sure to run 'npm run build' before running this script\n\""
   },
   "author": "Josh Willing Halpern <josh@willingapps.com>",
