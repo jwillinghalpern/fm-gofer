@@ -2,11 +2,11 @@
 
 Promises in FM Web Viewers!
 
-A framework for calling FileMaker scripts from JavaScript in web viewers and getting responses back via promise callbacks. Gofer... as in gofer this data, gofer that data.
+It's like fetch() for FileMaker! Go'fer some data. Call FileMaker scripts from JavaScript in a web viewer and get the response back using async/await.
 
 ## Try it
 
-Check out `./example/FMGofer.fmp12`. This example demostrates the callback, resolve, reject, and timeout capabilities of the library. You can rebuild the example code used in the fm file by running `npm run build-example`.
+Check out `./example/FMGofer.fmp12`. This example demostrates the callback, resolve, reject, and timeout capabilities of the library. You can rebuild the example code used in the fm file by running `npm run build && npm run build:example`. This will output an html file in example/dist/index.html, which can be used in a FM webviewer.
 
 ## Install fm-gofer in your JS project
 
@@ -21,38 +21,30 @@ npm install --save fm-gofer
 `import` syntax:
 
 ```javascript
-import * as FMGofer from 'fm-gofer';
+import FMGofer from 'fm-gofer';
 ```
 
 `require` syntax:
 
 ```javascript
-// polyfill only needed for FMP 19.2.2 and earlier
-require('fm-gofer/polyfill-ie11'); // or require('./node_modules/fm-gofer/dist/polyfill-ie11.js');
 const FMGofer = require('fm-gofer');
 ```
 
 Or import from a CDN for convenience:
 
 ```html
-<!-- polyfill only needed for FMP 19.2.2 and earlier -->
-<script src="https://unpkg.com/fm-gofer/dist/polyfill-ie11.min.js"></script>
+<!-- This will set a global window property FMGofer -->
 <script src="https://unpkg.com/fm-gofer/dist/fm-gofer.min.js"></script>
 ```
 
 Or copy into yout HTML for offline apps:
 
 ```html
-<!-- polyfill only needed for FMP 19.2.2 and earlier -->
 <script>
-  (copy of ./dist/polyfill-ie11.min.js)
-</script>
-<script>
-  (copy of ./dist/fm-gofer.min.js)
+  // This will set a global window property FMGofer
+  (copy of ./dist/fm-gofer.umd.cjs)
 </script>
 ```
-
-**_IMPORTANT:_** `polyfill-ie11.js` (or `polyfill-ie11.min.js`) is **only** required for webviewers in Windows FileMaker Pro < 19.3.1, because Internet Explorer 11 doesn't support promises and newer FM versions use MS Edge. But if your app has a build step like Webpack/Rollup then you can omit `polyfill-ie11` and use your build system to polyfill promises instead. But if you're importing the library via `<script>` tags then `polyfill-ie11.min.js` is your friend.
 
 ### Use fm-gofer
 
