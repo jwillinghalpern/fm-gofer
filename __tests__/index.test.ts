@@ -142,6 +142,7 @@ describe('PerformScriptWithOption', () => {
 
     it('should throw Error if timeout not number', () => {
       expect(() =>
+        // @ts-expect-error
         FMGofer.PerformScriptWithOption(script, undefined, undefined, 'NaN', 'lkj')
       ).toThrowError();
     });
@@ -154,6 +155,7 @@ describe('PerformScriptWithOption', () => {
           undefined,
           undefined,
           1000,
+          // @ts-expect-error
           timeoutMessage
         )
       ).toThrowError();
@@ -161,7 +163,9 @@ describe('PerformScriptWithOption', () => {
 
     it('should throw Error on non-string or empty string script', () => {
       expect(() => { FMGofer.PerformScriptWithOption('') }).toThrow();
+      // @ts-expect-error
       expect(() => { FMGofer.PerformScriptWithOption() }).toThrow();
+      // @ts-expect-error
       expect(() => { FMGofer.PerformScriptWithOption(undefined) }).toThrow();
     });
 
