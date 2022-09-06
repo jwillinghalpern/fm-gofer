@@ -28,7 +28,8 @@
     "web viewer",
     "webviewer",
     "promise",
-    "callback"
+    "callback",
+    "fetch"
   ],
   "scripts": {
     "test": "vitest",
