@@ -208,4 +208,15 @@ describe('Wait for FM to be ready before calling', () => {
     expect(spy).toBeCalled();
     vi.useRealTimers();
   });
+
+  it('should reject and log error if window.FileMaker doesn\t appear in time', async () => {
+    // the max wait time is 2000ms
+    const spy = vi.fn();
+    vi.useFakeTimers();
+    const prom = FMGofer.PerformScriptWithOption('test script', 'test param', 3);
+    // window.FileMaker is not found within 2000ms
+    vi.advanceTimersByTime(2100);
+    await expect(prom).rejects.toThrowError();
+    expect(spy).not.toBeCalled();
+  });
 });
