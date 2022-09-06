@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fm-gofer example</title>
+    <!-- Scroll to the body for example usage -->
+    
+    
+    <script type="module" crossorigin>
+(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))e(r);new MutationObserver(r=>{for(const i of r)if(i.type==="childList")for(const f of i.addedNodes)f.tagName==="LINK"&&f.rel==="modulepreload"&&e(f)}).observe(document,{childList:!0,subtree:!0});function n(r){const i={};return r.integrity&&(i.integrity=r.integrity),r.referrerpolicy&&(i.referrerPolicy=r.referrerpolicy),r.crossorigin==="use-credentials"?i.credentials="include":r.crossorigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function e(r){if(r.ep)return;r.ep=!0;const i=n(r);fetch(r.href,i)}})();const m="The FM script call timed out",a="fmGoferCallbackD7738642C91848E08720EAC24EDDA483";function x(){return"xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g,o=>{var t=Math.random()*16|0,n=o=="x"?t:t&3|8;return n.toString(16)})}function y(){return typeof window.fmGofer=="object"&&window.fmGofer!==null&&!Array.isArray(window.fmGofer)}function I(){y()||(window.fmGofer={promises:{},callbackName:a},window[a]=D)}function v(o,t,n,e){const r=x(),i={resolve:o,reject:t};return n!==0&&(i.timeoutID=setTimeout(()=>{i.fmOnReadyIntervalID&&clearInterval(i.fmOnReadyIntervalID),u(r),t(e)},n)),window.fmGofer.promises[r]=i,r}function h(o){return window.fmGofer.promises[o]}function u(o){var t,n;const e=(n=(t=window.fmGofer)==null?void 0:t.promises)==null?void 0:n[o];return e&&(e.timeoutID&&clearTimeout(e.timeoutID),e.fmOnReadyIntervalID&&clearInterval(e.fmOnReadyIntervalID)),delete window.fmGofer.promises[o]}function D(o,t,n){try{n==="0"&&(n="");const e=h(o);if(typeof e>"u")throw new Error(`No promise found for promiseID ${o}.`);e.timeoutID&&clearTimeout(e.timeoutID),n?e.reject(t):e.resolve(t),u(o)}catch(e){console.error(e)}}function g(o,t,n){let e;return{promise:new Promise((r,i)=>{if(typeof window.FileMaker=="object"){window.FileMaker.PerformScriptWithOption(o,t,n);return}const f=5,s=2e3;let c=0;e=setInterval(()=>{c+=f,c>s&&(clearInterval(e),i(`window.FileMaker not found within ${s} ms`)),typeof window.FileMaker=="object"&&(clearInterval(e),window.FileMaker.PerformScriptWithOption(o,t,n),r())},f)}),intervalID:e}}function d(o,t,n,e=15e3,r=m){if(typeof o!="string"||!o)throw new Error("script must be a string");if(typeof e!="number")throw new Error("timeout must be a number");if(typeof r!="string")throw new Error("timeoutMessage must be a string");return new Promise(async(i,f)=>{I();const s=v(i,f,e,r),c={promiseID:s,callbackName:a,parameter:t},w=JSON.stringify(c);try{const{promise:l,intervalID:p}=g(o,w,n);window.fmGofer.promises[s].fmOnReadyIntervalID=p,await l}catch(l){u(s),f(l)}})}function b(o,t=void 0,n=15e3,e=m){return d(o,t,void 0,n,e)}const O={PerformScript:b,PerformScriptWithOption:d};window.FMGofer=O;
+
+</script>
+    <style type="text/css">
+*{font-family:Arial,Helvetica,sans-serif;color:#fff;margin:10px;text-align:center}body{background-color:#223339}button{padding:10pt;font-size:medium;border:.5pt solid #007fb5;border-radius:5pt;background-color:#0091ce;color:#fff}button:active{background-color:#007cb1}.message{margin-top:10pt;margin-bottom:10pt;font-size:large}.loader{color:#9c9c9c;font-size:20px;margin:100px auto;width:1em;height:1em;border-radius:50%;position:relative;text-indent:-9999em;-webkit-animation:load4 1.3s infinite linear;animation:load4 1.3s infinite linear;-webkit-transform:translateZ(0);-ms-transform:translateZ(0);transform:translateZ(0)}@-webkit-keyframes load4{0%,to{box-shadow:0 -3em 0 .2em,2em -2em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em}12.5%{box-shadow:0 -3em,2em -2em 0 .2em,3em 0,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}25%{box-shadow:0 -3em 0 -.5em,2em -2em,3em 0 0 .2em,2em 2em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}37.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0,2em 2em 0 .2em,0 3em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}50%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em,0 3em 0 .2em,-2em 2em,-3em 0 0 -1em,-2em -2em 0 -1em}62.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em,-2em 2em 0 .2em,-3em 0,-2em -2em 0 -1em}75%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0 0 .2em,-2em -2em}87.5%{box-shadow:0 -3em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0,-2em -2em 0 .2em}}@keyframes load4{0%,to{box-shadow:0 -3em 0 .2em,2em -2em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em}12.5%{box-shadow:0 -3em,2em -2em 0 .2em,3em 0,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}25%{box-shadow:0 -3em 0 -.5em,2em -2em,3em 0 0 .2em,2em 2em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}37.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0,2em 2em 0 .2em,0 3em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}50%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em,0 3em 0 .2em,-2em 2em,-3em 0 0 -1em,-2em -2em 0 -1em}62.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em,-2em 2em 0 .2em,-3em 0,-2em -2em 0 -1em}75%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0 0 .2em,-2em -2em}87.5%{box-shadow:0 -3em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0,-2em -2em 0 .2em}}
+
+</style>
+  </head>
+
+  <body>
+    <button id="myButton">Click Me</button>
+    <div id="message" class="message">Click the button to get a message</div>
+    <div id="loader" class="loader" hidden>Loading...</div>
+    <script>
+      (function () {
+        function handleClick() {
+          var script = 'FM Script';
+          var param = 'HELLO FROM JS ' + new Date();
+          var timeout = 1000;
+          var timeoutMessage = 'Custom timeout message. The webviewer code elected to only wait for ' + timeout + 'ms.';
+          updateMessage('Waiting...');
+          showLoader();
+          FMGofer.PerformScript(script, param, timeout, timeoutMessage)
+            .then(function (result) {
+              hideLoader();
+              updateMessage(result, '😍');
+            })
+            .catch(function (error) {
+              hideLoader();
+              updateMessage(error, '😵');
+            });
+        }
+        function showLoader() {
+          document.getElementById('loader').hidden = false;
+        }
+        function hideLoader() {
+          document.getElementById('loader').hidden = true;
+        }
+        function updateMessage(message, emoji) {
+          var html = message;
+          if (emoji) {
+            html += '<div style="font-size: 4rem;">' + emoji + '</div>';
+          }
+          document.getElementById('message').innerHTML = html;
+        }
+
+        document.getElementById('myButton').onclick = handleClick;
+      })();
+    </script>
+  </body>
+</html>
