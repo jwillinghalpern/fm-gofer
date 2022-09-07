@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+// https://vitest.dev/config/#configuration
 import { resolve } from "path";
 import { defineConfig } from 'vite';
 
