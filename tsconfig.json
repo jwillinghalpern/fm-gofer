@@ -1,10 +1,9 @@
 {
-	"compilerOptions": {
-		"outDir": "dist",
-		"declaration": true,
-		"declarationDir": "dist",
-	},
-	"include": [
-		"src"
-	],
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "dist",
+    "lib": ["dom"]
+  },
+  "include": ["src"]
 }
