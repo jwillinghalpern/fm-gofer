@@ -63,6 +63,8 @@ var d = await FMGofer.PerformScriptWithOption(
   5000,
   'timed out!'
 );
+// or set the timeout to zero to wait forever
+var c = await FMGofer.PerformScript('FM Script', param, 0);
 ```
 
 In your FileMaker script:
