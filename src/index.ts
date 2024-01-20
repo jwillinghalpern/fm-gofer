@@ -144,7 +144,7 @@ function fmOnReady_PerformScriptWithOption(
  * @extends {Promise<string>}
  */
 class FMGPromise extends Promise<string> {
-  async json(): Promise<any> {
+  async json<T = any>(): Promise<T> {
     const text = await this;
     return JSON.parse(text);
   }

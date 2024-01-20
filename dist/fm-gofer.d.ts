@@ -6,7 +6,7 @@ declare const callbackName = "fmGoferCallbackD7738642C91848E08720EAC24EDDA483";
  * @extends {Promise<string>}
  */
 declare class FMGPromise extends Promise<string> {
-    json(): Promise<any>;
+    json<T = any>(): Promise<T>;
 }
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
