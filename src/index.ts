@@ -138,6 +138,19 @@ function fmOnReady_PerformScriptWithOption(
 }
 
 /**
+ * Extend Promise to add a json() method
+ *
+ * @class MyPromise
+ * @extends {Promise<string>}
+ */
+class FMGPromise extends Promise<string> {
+  async json(): Promise<any> {
+    const text = await this;
+    return JSON.parse(text);
+  }
+}
+
+/**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
  * @function
  *
@@ -154,14 +167,14 @@ export function PerformScriptWithOption(
   option?: ScriptOption,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
-): Promise<string> {
+): FMGPromise {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
   if (typeof timeoutMessage !== 'string')
     throw new Error('timeoutMessage must be a string');
 
-  return new Promise(async (resolve, reject) => {
+  return new FMGPromise(async (resolve, reject) => {
     initializeGofer();
     // store resolve and reject for calling outside this scope
     const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
@@ -204,7 +217,7 @@ export function PerformScript(
   parameter: any = undefined,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
-): Promise<string> {
+): FMGPromise {
   const option = undefined;
   return PerformScriptWithOption(
     script,
