@@ -1,4 +1,4 @@
-const defaultTimeout = 15000;
+const defaultTimeout = 0; // 0 means wait indefinitely
 const defaultTimeoutMessage = 'The FM script call timed out';
 const callbackName = 'fmGoferCallbackD7738642C91848E08720EAC24EDDA483';
 
