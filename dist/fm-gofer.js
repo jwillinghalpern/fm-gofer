@@ -56,7 +56,7 @@ function h(t, r, o) {
     intervalID: e
   };
 }
-function d(t, r, o, e = 15e3, n = w) {
+function d(t, r, o, e = 0, n = w) {
   if (typeof t != "string" || !t)
     throw new Error("script must be a string");
   if (typeof e != "number")
@@ -82,7 +82,7 @@ function d(t, r, o, e = 15e3, n = w) {
     }
   });
 }
-function b(t, r = void 0, o = 15e3, e = w) {
+function b(t, r = void 0, o = 0, e = w) {
   return d(
     t,
     r,
