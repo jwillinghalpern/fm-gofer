@@ -1,7 +1,7 @@
-const w = "The FM script call timed out", l = "fmGoferCallbackD7738642C91848E08720EAC24EDDA483";
+const w = "The FM script call timed out", c = "fmGoferCallbackD7738642C91848E08720EAC24EDDA483";
 function x() {
-  return "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g, (r) => {
-    var o = Math.random() * 16 | 0, e = r == "x" ? o : o & 3 | 8;
+  return "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g, (o) => {
+    var r = Math.random() * 16 | 0, e = o == "x" ? r : r & 3 | 8;
     return e.toString(16);
   });
 }
@@ -11,52 +11,52 @@ function I() {
 function y() {
   I() || (window.fmGofer = {
     promises: {},
-    callbackName: l
-  }, window[l] = G);
+    callbackName: c
+  }, window[c] = G);
 }
-function v(t, r, o, e) {
-  const n = x(), i = { resolve: t, reject: r };
-  return o !== 0 && (i.timeoutID = setTimeout(() => {
-    i.fmOnReadyIntervalID && clearInterval(i.fmOnReadyIntervalID), u(n), r(e);
-  }, o)), window.fmGofer.promises[n] = i, n;
+function v(t, o, r, e) {
+  const n = x(), i = { resolve: t, reject: o };
+  return r !== 0 && (i.timeoutID = setTimeout(() => {
+    i.fmOnReadyIntervalID && clearInterval(i.fmOnReadyIntervalID), l(n), o(e);
+  }, r)), window.fmGofer.promises[n] = i, n;
 }
 function D(t) {
   return window.fmGofer.promises[t];
 }
-function u(t) {
-  var o, e;
-  const r = (e = (o = window.fmGofer) == null ? void 0 : o.promises) == null ? void 0 : e[t];
-  return r && (r.timeoutID && clearTimeout(r.timeoutID), r.fmOnReadyIntervalID && clearInterval(r.fmOnReadyIntervalID)), delete window.fmGofer.promises[t];
+function l(t) {
+  var r, e;
+  const o = (e = (r = window.fmGofer) == null ? void 0 : r.promises) == null ? void 0 : e[t];
+  return o && (o.timeoutID && clearTimeout(o.timeoutID), o.fmOnReadyIntervalID && clearInterval(o.fmOnReadyIntervalID)), delete window.fmGofer.promises[t];
 }
-function G(t, r, o) {
+function G(t, o, r) {
   try {
-    o === "0" && (o = "");
+    r === "0" && (r = "");
     const e = D(t);
     if (typeof e > "u")
       throw new Error(`No promise found for promiseID ${t}.`);
-    e.timeoutID && clearTimeout(e.timeoutID), o ? e.reject(r) : e.resolve(r), u(t);
+    e.timeoutID && clearTimeout(e.timeoutID), r ? e.reject(o) : e.resolve(o), l(t);
   } catch (e) {
     console.error(e);
   }
 }
-function h(t, r, o) {
+function h(t, o, r) {
   let e;
   return {
     promise: new Promise((i, a) => {
       if (typeof window.FileMaker == "object") {
-        window.FileMaker.PerformScriptWithOption(t, r, o);
+        window.FileMaker.PerformScriptWithOption(t, o, r);
         return;
       }
       const f = 5, m = 2e3;
       let s = 0;
       e = setInterval(() => {
-        s += f, s > m && (clearInterval(e), a(`window.FileMaker not found within ${m} ms`)), typeof window.FileMaker == "object" && (clearInterval(e), window.FileMaker.PerformScriptWithOption(t, r, o), i());
+        s += f, s > m && (clearInterval(e), a(`window.FileMaker not found within ${m} ms`)), typeof window.FileMaker == "object" && (clearInterval(e), window.FileMaker.PerformScriptWithOption(t, o, r), i());
       }, f);
     }),
     intervalID: e
   };
 }
-function d(t, r, o, e = 0, n = w) {
+function d(t, o, r, e = 0, n = w) {
   if (typeof t != "string" || !t)
     throw new Error("script must be a string");
   if (typeof e != "number")
@@ -67,33 +67,42 @@ function d(t, r, o, e = 0, n = w) {
     y();
     const f = v(i, a, e, n), m = {
       promiseID: f,
-      callbackName: l,
-      parameter: r
+      callbackName: c,
+      parameter: o
     }, s = JSON.stringify(m);
     try {
-      const { promise: c, intervalID: p } = h(
+      const { promise: u, intervalID: p } = h(
         t,
         s,
-        o
+        r
       );
-      window.fmGofer.promises[f].fmOnReadyIntervalID = p, await c;
-    } catch (c) {
-      u(f), a(c);
+      window.fmGofer.promises[f].fmOnReadyIntervalID = p, await u;
+    } catch (u) {
+      l(f), a(u);
     }
   });
 }
-function b(t, r = void 0, o = 0, e = w) {
+function O(t, o = void 0, r = 0, e = w) {
   return d(
     t,
-    r,
-    void 0,
     o,
+    void 0,
+    r,
     e
   );
 }
-const O = { PerformScript: b, PerformScriptWithOption: d };
+const b = {
+  Default: 0,
+  Continue: 0,
+  Halt: 1,
+  Exit: 2,
+  Resume: 3,
+  Pause: 4,
+  SuspendAndResume: 5
+}, M = { PerformScript: O, PerformScriptWithOption: d };
 export {
-  b as PerformScript,
+  b as Option,
+  O as PerformScript,
   d as PerformScriptWithOption,
-  O as default
+  M as default
 };

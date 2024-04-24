@@ -22,7 +22,17 @@ export declare function PerformScriptWithOption(script: string, parameter?: any,
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
 export declare function PerformScript(script: string, parameter?: any, timeout?: number, timeoutMessage?: string): Promise<string>;
-declare type ScriptOption = 0 | 1 | 2 | 3 | 4 | 5 | '0' | '1' | '2' | '3' | '4' | '5';
+export declare const Option: {
+    readonly Default: 0;
+    readonly Continue: 0;
+    readonly Halt: 1;
+    readonly Exit: 2;
+    readonly Resume: 3;
+    readonly Pause: 4;
+    readonly SuspendAndResume: 5;
+};
+declare type Option = typeof Option[keyof typeof Option];
+declare type ScriptOption = Option | '0' | '1' | '2' | '3' | '4' | '5';
 interface GoferPromise {
     resolve: Function;
     reject: Function;
