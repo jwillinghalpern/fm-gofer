@@ -28,6 +28,7 @@ import FMGofer, { Option } from 'fm-gofer';
 
 ```javascript
 const FMGofer = require('fm-gofer');
+const { Option } = FMGofer;
 ```
 
 Or import from a CDN for convenience:
