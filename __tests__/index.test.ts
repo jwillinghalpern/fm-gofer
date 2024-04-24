@@ -1,6 +1,6 @@
 import { vi, describe, it, expect, beforeEach, afterEach, Mock, afterAll } from 'vitest'
 
-import FMGofer, { GoferParam } from '../src/index';
+import FMGofer, { GoferParam, Option } from '../src/index';
 
 vi.stubGlobal('FileMaker', {})
 
@@ -37,7 +37,7 @@ describe('PerformScript', () => {
   it('should allow custom parameter and fm script option', () => {
     const script = 'My Script';
     const parameter = 'my param';
-    const option = 5;
+    const option = Option.SuspendAndResume;
     FMGofer.PerformScriptWithOption(script, parameter, option);
 
     expect(pswo).toBeCalled();

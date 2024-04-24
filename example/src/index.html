@@ -8,7 +8,7 @@
     <!-- Scroll to the body for example usage -->
     <link rel="stylesheet" href="index.css">
     <script type="module">
-      import FMGofer from '../../dist/fm-gofer'
+      import FMGofer, { Option } from '../../dist/fm-gofer'
       window.FMGofer = FMGofer;
     </script>
   </head>
@@ -26,7 +26,7 @@
           var timeoutMessage = 'Custom timeout message. The webviewer code elected to only wait for ' + timeout + 'ms.';
           updateMessage('Waiting...');
           showLoader();
-          FMGofer.PerformScript(script, param, timeout, timeoutMessage)
+          FMGofer.PerformScriptWithOption(script, param, Option.Default, timeout, timeoutMessage)
             .then(function (result) {
               hideLoader();
               updateMessage(result, '😍');
