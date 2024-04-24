@@ -21,7 +21,7 @@ npm install --save fm-gofer
 `import` syntax:
 
 ```javascript
-import FMGofer from 'fm-gofer';
+import FMGofer, { Option } from 'fm-gofer';
 ```
 
 `require` syntax:
@@ -51,15 +51,17 @@ Or copy into yout HTML for offline apps:
 In your JS:
 
 ```javascript
+import FMGofer, { Option } from 'fm-gofer';
 var a = await FMGofer.PerformScript('FM Script', param);
-var b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
+// use the Option enum to specify the script option in human-readable form:
+var b = await FMGofer.PerformScriptWithOption('FM Script', param, Option.SuspendAndResume);
 
 // Set a custom timeout/timeout message if the default to wait indefinitely is too long
 var c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
 var d = await FMGofer.PerformScriptWithOption(
   'FM Script',
   param,
-  5,
+  Option.SuspendAndResume,
   5000,
   'timed out!'
 );
