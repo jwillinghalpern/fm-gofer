@@ -215,7 +215,21 @@ export function PerformScript(
   );
 }
 
-type ScriptOption = 0 | 1 | 2 | 3 | 4 | 5 | '0' | '1' | '2' | '3' | '4' | '5';
+export const Option = {
+  Default: 0,
+  Continue: 0,
+  Halt: 1,
+  Exit: 2,
+  Resume: 3,
+  Pause: 4,
+  SuspendAndResume: 5,
+} as const;
+
+// then a function can use this to define its allowed types
+type Option = typeof Option[keyof typeof Option];
+
+type ScriptOption = Option | '0' | '1' | '2' | '3' | '4' | '5';
+
 interface GoferPromise {
   resolve: Function;
   reject: Function;
