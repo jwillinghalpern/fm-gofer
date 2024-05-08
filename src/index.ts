@@ -137,12 +137,20 @@ function fmOnReady_PerformScriptWithOption(
   };
 }
 
+type JSONValue = string | number | boolean | null | JSONObject | JSONArray;
+
+interface JSONObject {
+  [key: string]: JSONValue;
+}
+
+interface JSONArray extends Array<JSONValue> {}
+
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
  * @function
  *
  * @param {string} script name of script
- * @param {any} [parameter=undefined] parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
+ * @param {JSONValue} [parameter=undefined] parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {ScriptOption} option script option between 0 and 5
  * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
@@ -150,7 +158,7 @@ function fmOnReady_PerformScriptWithOption(
  */
 export function PerformScriptWithOption(
   script: string,
-  parameter?: any,
+  parameter?: JSONValue,
   option?: ScriptOption,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
@@ -194,14 +202,14 @@ export function PerformScriptWithOption(
  * @function
  *
  * @param {string} script name of script
- * @param {any} [parameter=undefined] parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
+ * @param {JSONValue} [parameter=undefined] parameter you wish to send to fm. It will be nested in the `parameter` property of the script parameter
  * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
 export function PerformScript(
   script: string,
-  parameter: any = undefined,
+  parameter: JSONValue = undefined,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
 ): Promise<string> {
@@ -240,7 +248,7 @@ interface GoferPromise {
 export interface GoferParam {
   callbackName: typeof callbackName;
   promiseID: string;
-  parameter: any;
+  parameter: JSONValue;
 }
 
 type IsError = '1' | '0' | '' | boolean;
