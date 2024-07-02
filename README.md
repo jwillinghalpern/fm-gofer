@@ -50,19 +50,9 @@ Or copy into yout HTML for offline apps:
 
 In your JS:
 
-```typescript
+```javascript
 var a = await FMGofer.PerformScript('FM Script', param);
 var b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
-
-// You can auto-parse the response as JSON if FM returns json!
-var j = await FMGofer.PerformScript('FM Script', param).json();
-// and even declare the type of response
-interface MyResult {
-  name: string;
-  age: number;
-}
-var k = await FMGofer.PerformScript('FM Script', param).json<MyResult>();
-const { name, age } = k; // nested properties auto-complete now.
 
 // Set a custom timeout/timeout message if the default 15000 ms is too long
 var c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
@@ -90,6 +80,22 @@ Set Variable [ $parameter ; JSONGetElement ( Get(ScriptParameter) ; "parameter" 
 # callback to JS like: $callbackName($promiseID, <dataToReturn>, <trueToReject>)
 # (leave the third argument empty or False to indicate a success. Or set to True to indicate an error)
 Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: $callbackName ; Parameters: $promiseID, 'Success! Hello from FM!' ]
+```
+
+TypeScript support:
+
+```typescript
+// You can auto-parse the response as JSON if FM returns json!
+var j = await FMGofer.PerformScript('FM Script', param).json();
+// and optionally declare the shape of the result
+interface MyResult {
+  name: string;
+  age: number;
+}
+var k = await FMGofer.PerformScript('FM Script', param).json<MyResult>();
+// nested properties auto-complete now.
+const name = k.name;
+const age = k.age;
 ```
 
 ## MISC
