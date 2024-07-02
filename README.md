@@ -50,12 +50,19 @@ Or copy into yout HTML for offline apps:
 
 In your JS:
 
-```javascript
+```typescript
 var a = await FMGofer.PerformScript('FM Script', param);
 var b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
 
 // You can auto-parse the response as JSON if FM returns json!
 var j = await FMGofer.PerformScript('FM Script', param).json();
+// and even declare the type of response
+interface MyResult {
+  name: string;
+  age: number;
+}
+var k = await FMGofer.PerformScript('FM Script', param).json<MyResult>();
+const { name, age } = k; // nested properties auto-complete now.
 
 // Set a custom timeout/timeout message if the default 15000 ms is too long
 var c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
