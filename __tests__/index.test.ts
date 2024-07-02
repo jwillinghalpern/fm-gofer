@@ -310,4 +310,4 @@ describe('PerformScript', () => {
       expect(spy).not.toBeCalled();
     });
   });
-});
+})});
