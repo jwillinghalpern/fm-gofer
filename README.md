@@ -18,26 +18,26 @@ npm install --save fm-gofer
 
 ### Import fm-gofer
 
-`import` syntax:
+#### `import` syntax
 
 ```javascript
 import FMGofer from 'fm-gofer';
 ```
 
-`require` syntax:
+#### `require` syntax
 
 ```javascript
 const FMGofer = require('fm-gofer');
 ```
 
-Or import from a CDN for convenience:
+#### Via CDN for convenience
 
 ```html
 <!-- This will set a global window property FMGofer -->
 <script src="https://unpkg.com/fm-gofer/dist/fm-gofer.umd.cjs"></script>
 ```
 
-Or copy into yout HTML for offline apps:
+#### Or copy into yout HTML if you really want
 
 ```html
 <script>
@@ -48,26 +48,32 @@ Or copy into yout HTML for offline apps:
 
 ### Use fm-gofer
 
-In your JS:
+#### In your JS
 
 ```javascript
-var a = await FMGofer.PerformScript('FM Script', param);
-var b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
+import FMGofer from 'fm-gofer';
+
+const a = await FMGofer.PerformScript('FM Script', param);
+const b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
+
+// if your FM script returns JSON, you can parse it automatically
+const j = await FMGofer.PerformScript('FM Script', param).json();
 
 // Set a custom timeout/timeout message if the default 15000 ms is too long
-var c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
-var d = await FMGofer.PerformScriptWithOption(
+const c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
+const d = await FMGofer.PerformScriptWithOption(
   'FM Script',
   param,
   5,
   5000,
   'timed out!'
 );
+
 // or set the timeout to zero to wait forever
-var c = await FMGofer.PerformScript('FM Script', param, 0);
+const e = await FMGofer.PerformScript('FM Script', param, 0);
 ```
 
-In your FileMaker script:
+#### In your FileMaker script
 
 To return data to JS, extract `callbackName` and `promiseID` from `Get ( ScriptParameter )`, and use it to call back to JS and resolve/reject the promise. Pass `True` as the last param ("failed") to reject the promise.
 
@@ -82,20 +88,18 @@ Set Variable [ $parameter ; JSONGetElement ( Get(ScriptParameter) ; "parameter" 
 Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: $callbackName ; Parameters: $promiseID, 'Success! Hello from FM!' ]
 ```
 
-TypeScript support:
+#### TypeScript support
 
 ```typescript
-// You can auto-parse the response as JSON if FM returns json!
-var j = await FMGofer.PerformScript('FM Script', param).json();
-// and optionally declare the shape of the result
+// You can assert the shape of the result returned from FM using typescript!
 interface MyResult {
   name: string;
   age: number;
 }
-var k = await FMGofer.PerformScript('FM Script', param).json<MyResult>();
-// nested properties auto-complete now.
-const name = k.name;
-const age = k.age;
+const j = await FMGofer.PerformScript('FM Script', param).json<MyResult>();
+// Nested properties auto-complete in VSCode now!
+const name = j.name;
+const age = j.age;
 ```
 
 ## MISC

@@ -5,8 +5,8 @@ interface JsonObject {
 }
 interface JsonArray extends Array<JsonValue> {
 }
-interface FMGPromise<T = JsonObject | JsonArray> extends Promise<string> {
-    json<U = T>(): Promise<U>;
+interface FMGPromise extends Promise<string> {
+    json<U = JsonObject | JsonArray>(): Promise<U>;
 }
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting

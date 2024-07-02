@@ -137,14 +137,16 @@ function fmOnReady_PerformScriptWithOption(
   };
 }
 
-// type to describe a vanilla JSON Object or Array as default generic type for FMGPromise
+// types to describe a vanilla JSON Object or Array as default generic type for FMGPromise
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 interface JsonObject {
   [key: string]: JsonValue;
 }
 interface JsonArray extends Array<JsonValue> {}
 
-// Our custom promise type that adds a json method. Note, the json method does not behave like fetch because you call it on the promise itself, not the inner value of the resolved promise.
+// Our custom promise type that adds a `json` method. Note, the json method
+// does not behave like fetch because you call it on the promise itself,
+// not the inner value of the resolved promise.
 interface FMGPromise extends Promise<string> {
   json<U = JsonObject | JsonArray>(): Promise<U>;
 }
@@ -154,7 +156,6 @@ function toFMGPromise(promise: Promise<string>): FMGPromise {
   // Create a new object that inherits from the original promise
   const fmgPromise = Object.create(promise) as FMGPromise;
 
-  // Add json method
   fmgPromise.json = function <U = JsonObject | JsonArray>() {
     return this.then((text: string) => JSON.parse(text) as U);
   };
