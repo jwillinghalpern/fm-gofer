@@ -148,7 +148,7 @@ interface JsonArray extends Array<JsonValue> {}
 // does not behave like fetch's json method because you call this on the promise itself,
 // not the inner value of the resolved promise like fetch.
 interface FMGPromise extends Promise<string> {
-  json<U = JsonObject | JsonArray>(): Promise<U>;
+  json<T = JsonObject | JsonArray>(): Promise<T>;
 }
 
 /// Converts a Promise<string> to a FMGPromise
@@ -157,8 +157,8 @@ function toFMGPromise(promise: Promise<string>): FMGPromise {
   const fmgPromise = Object.create(promise) as FMGPromise;
 
   /// json method that parses the resolved string as JSON
-  fmgPromise.json = function <U = JsonObject | JsonArray>() {
-    return this.then((text: string) => JSON.parse(text) as U);
+  fmgPromise.json = function <T = JsonObject | JsonArray>() {
+    return this.then((text: string) => JSON.parse(text) as T);
   };
 
   return fmgPromise;
