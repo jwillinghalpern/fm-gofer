@@ -21,13 +21,14 @@ npm install --save fm-gofer
 #### `import` syntax
 
 ```javascript
-import FMGofer from 'fm-gofer';
+import FMGofer, { Option } from 'fm-gofer';
 ```
 
 #### `require` syntax
 
 ```javascript
 const FMGofer = require('fm-gofer');
+const { Option } = FMGofer;
 ```
 
 #### Via CDN for convenience
@@ -51,20 +52,24 @@ const FMGofer = require('fm-gofer');
 #### In your JS
 
 ```javascript
-import FMGofer from 'fm-gofer';
+import FMGofer, { Option } from 'fm-gofer';
 
 const a = await FMGofer.PerformScript('FM Script', param);
-const b = await FMGofer.PerformScriptWithOption('FM Script', param, 5);
+// use the Option enum to specify the script option in human-readable form:
+const b = await FMGofer.PerformScriptWithOption(
+  'FM Script',
+  param,
+  Option.SuspendAndResume
+);
 
-// if your FM script returns JSON, you can parse it automatically
-const j = await FMGofer.PerformScript('FM Script', param).json();
+// Set a custom timeout/timeout message if the default to wait indefinitely is too long
+import FMGofer, { Option } from 'fm-gofer';
 
-// Set a custom timeout/timeout message if the default 15000 ms is too long
 const c = await FMGofer.PerformScript('FM Script', param, 5000, 'timed out!');
 const d = await FMGofer.PerformScriptWithOption(
   'FM Script',
   param,
-  5,
+  Option.SuspendAndResume,
   5000,
   'timed out!'
 );

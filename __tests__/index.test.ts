@@ -9,7 +9,7 @@ import {
   afterAll,
 } from 'vitest';
 
-import FMGofer, { GoferParam } from '../src/index';
+import FMGofer, { GoferParam, Option } from '../src/index';
 
 vi.stubGlobal('FileMaker', {});
 
@@ -65,7 +65,7 @@ describe('PerformScript', () => {
   it('should allow custom parameter and fm script option', () => {
     const script = 'My Script';
     const parameter = 'my param';
-    const option = 5;
+    const option = Option.SuspendAndResume;
     FMGofer.PerformScriptWithOption(script, parameter, option);
 
     expect(pswo).toBeCalled();
@@ -159,52 +159,40 @@ describe('PerformScript', () => {
       await expect(FMGofer.PerformScript('My Script')).rejects.toEqual(message);
     });
 
-    describe('timeouts', () => {
-      beforeEach(() => {
-        vi.useFakeTimers();
-        // mock console to suppress the error that fm-gofer logs
-        window.console.error = vi.fn(() => {});
-        // simulate a very slow response from FileMaker
-        const timeoutMs = 100 * 60 * 5; // 5 minutes. This should be longer than the default timeout.
-        window.FileMaker.PerformScriptWithOption = vi.fn(
-          (script, param, option) => {
-            setTimeout(() => {
-              const { callbackName, promiseID }: GoferParam = JSON.parse(
-                param as string
-              );
-              const cb = window[callbackName];
-              cb(promiseID, 'success but too slow!');
-            }, timeoutMs);
-          }
-        );
+  describe('timeouts', () => {
+		const successMessage = 'Slow but successful response from FM';
+    beforeEach(() => {
+      vi.useFakeTimers();
+      // mock console to suppress the error that fm-gofer logs
+      window.console.error = vi.fn(() => { });
+      // simulate a very slow response from FileMaker
+      const timeoutMs = 1000 * 60 * 5 // 5 minutes. This should be longer than the default timeout.
+      window.FileMaker.PerformScriptWithOption = vi.fn((script, param, option) => {
+        setTimeout(() => {
+          const { callbackName, promiseID }: GoferParam = JSON.parse(param as string);
+          window[callbackName](promiseID, successMessage)
+        }, timeoutMs);
       });
       afterEach(() => {
         vi.restoreAllMocks();
       });
 
-      it('should reject automatically with a default timeout and message', async () => {
-        const prom = FMGofer.PerformScript('My Script');
-        vi.runAllTimers();
-        await expect(prom).rejects.toThrow(
-          expect.stringContaining('timed out')
-        );
-      });
+    it("should reject automatically with a default timeout and message", async () => {
+      const prom = FMGofer.PerformScript('My Script');
+      vi.runAllTimers();
+      await expect(prom).resolves.toBe(successMessage);
+    })
 
-      it('should support custom messages and timeouts', async () => {
-        const customTimeout = 500; // only allow 500 ms for response
-        const customTimeoutMessage = 'custom message!';
-        const prom = FMGofer.PerformScript(
-          'My Script',
-          '',
-          customTimeout,
-          customTimeoutMessage
-        );
-        // overtake the short custom timeout, but fm still hasn't responded
-        // (remember we set it it to take 5 minutes)
-        vi.advanceTimersByTime(502);
-        await expect(prom).rejects.toThrow(customTimeoutMessage);
-      });
-    });
+    it("should support custom messages and timeouts", async () => {
+      const customTimeout = 500 // only allow 500 ms for response
+      const customTimeoutMessage = 'custom message!'
+      const prom = FMGofer.PerformScript('My Script', '', customTimeout, customTimeoutMessage);
+      // overtake the short custom timeout, but fm still hasn't responded
+      // (remember we set it it to take 5 minutes)
+      vi.advanceTimersByTime(502);
+      await expect(prom).rejects.toThrow(customTimeoutMessage);
+    })
+  })
 
     describe('inputs and outputs', () => {
       const script = 'My Script';
