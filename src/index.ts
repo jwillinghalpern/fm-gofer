@@ -137,17 +137,32 @@ function fmOnReady_PerformScriptWithOption(
   };
 }
 
-/**
- * Extend Promise to add a json() method
- *
- * @class MyPromise
- * @extends {Promise<string>}
- */
-class FMGPromise extends Promise<string> {
-  async json<T = any>(): Promise<T> {
-    const text = await this;
-    return JSON.parse(text);
-  }
+// type to describe a vanilla JSON Object or Array as default generic type for FMGPromise
+type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+interface JsonObject {
+  [key: string]: JsonValue;
+}
+interface JsonArray extends Array<JsonValue> {}
+
+// TODO: should T = string since PerformScriptWithOption returns a FMGPromise by default?
+// Our custom promise type that adds a json method. Note, the json method does not behave like fetch because you call it on the promise itself, not the inner value of the resolved promise.
+interface FMGPromise<T = JsonObject | JsonArray> extends Promise<string> {
+  json<U = T>(): Promise<U>;
+}
+
+// Function to convert a Promise<string> to a FMGPromise
+function toFMGPromise<T = JsonObject | JsonArray>(
+  promise: Promise<string>
+): FMGPromise<T> {
+  // Create a new object that inherits from the original promise
+  const fmgPromise = Object.create(promise) as FMGPromise<T>;
+
+  // Add json method
+  fmgPromise.json = function <U = T>() {
+    return this.then((text: string) => JSON.parse(text) as U);
+  };
+
+  return fmgPromise;
 }
 
 /**
@@ -167,39 +182,41 @@ export function PerformScriptWithOption(
   option?: ScriptOption,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
-): FMGPromise {
+): FMGPromise<string> {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
   if (typeof timeoutMessage !== 'string')
     throw new Error('timeoutMessage must be a string');
 
-  return new FMGPromise(async (resolve, reject) => {
-    initializeGofer();
-    // store resolve and reject for calling outside this scope
-    const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
-    const paramObj: GoferParam = {
-      promiseID,
-      callbackName,
-      parameter,
-    };
-    const param = JSON.stringify(paramObj);
-    // try performing FM script.
-    try {
-      const { promise, intervalID } = fmOnReady_PerformScriptWithOption(
-        script,
-        param,
-        option
-      );
-      // store the interval id in the gofer promise so it can clear the interval
-      // if the custom timeout is exceeded
-      window.fmGofer.promises[promiseID].fmOnReadyIntervalID = intervalID;
-      await promise;
-    } catch (error) {
-      deletePromise(promiseID);
-      reject(error);
-    }
-  });
+  return toFMGPromise(
+    new Promise(async (resolve, reject) => {
+      initializeGofer();
+      // store resolve and reject for calling outside this scope
+      const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
+      const paramObj: GoferParam = {
+        promiseID,
+        callbackName,
+        parameter,
+      };
+      const param = JSON.stringify(paramObj);
+      // try performing FM script.
+      try {
+        const { promise, intervalID } = fmOnReady_PerformScriptWithOption(
+          script,
+          param,
+          option
+        );
+        // store the interval id in the gofer promise so it can clear the interval
+        // if the custom timeout is exceeded
+        window.fmGofer.promises[promiseID].fmOnReadyIntervalID = intervalID;
+        await promise;
+      } catch (error) {
+        deletePromise(promiseID);
+        reject(error);
+      }
+    })
+  );
 }
 
 /**

@@ -1,12 +1,12 @@
 declare const callbackName = "fmGoferCallbackD7738642C91848E08720EAC24EDDA483";
-/**
- * Extend Promise to add a json() method
- *
- * @class MyPromise
- * @extends {Promise<string>}
- */
-declare class FMGPromise extends Promise<string> {
-    json<T = any>(): Promise<T>;
+declare type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+interface JsonObject {
+    [key: string]: JsonValue;
+}
+interface JsonArray extends Array<JsonValue> {
+}
+interface FMGPromise<T = JsonObject | JsonArray> extends Promise<string> {
+    json<U = T>(): Promise<U>;
 }
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
@@ -19,7 +19,7 @@ declare class FMGPromise extends Promise<string> {
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
-export declare function PerformScriptWithOption(script: string, parameter?: any, option?: ScriptOption, timeout?: number, timeoutMessage?: string): FMGPromise;
+export declare function PerformScriptWithOption(script: string, parameter?: any, option?: ScriptOption, timeout?: number, timeoutMessage?: string): FMGPromise<string>;
 /**
  * Perform a FileMaker Script. FM can return a result by resolving or rejecting
  * @function
