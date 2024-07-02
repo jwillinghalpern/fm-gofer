@@ -144,24 +144,10 @@ interface JsonObject {
 }
 interface JsonArray extends Array<JsonValue> {}
 
-// Our custom promise type that adds a `json` method. Note, the json method
-// does not behave like fetch's json method because you call this on the promise itself,
-// not the inner value of the resolved promise like fetch.
-interface FMGPromise extends Promise<string> {
-  json<T = JsonObject | JsonArray>(): Promise<T>;
-}
-
-/// Converts a Promise<string> to a FMGPromise
-function toFMGPromise(promise: Promise<string>): FMGPromise {
-  // Create a new object that inherits from the original promise
-  const fmgPromise = Object.create(promise) as FMGPromise;
-
-  /// json method that parses the resolved string as JSON
-  fmgPromise.json = function <T = JsonObject | JsonArray>() {
+class FMGPromise extends Promise<string> {
+  json<T = JsonObject | JsonArray>() {
     return this.then((text: string) => JSON.parse(text) as T);
-  };
-
-  return fmgPromise;
+  }
 }
 
 /**
@@ -188,34 +174,32 @@ export function PerformScriptWithOption(
   if (typeof timeoutMessage !== 'string')
     throw new Error('timeoutMessage must be a string');
 
-  return toFMGPromise(
-    new Promise(async (resolve, reject) => {
-      initializeGofer();
-      // store resolve and reject for calling outside this scope
-      const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
-      const paramObj: GoferParam = {
-        promiseID,
-        callbackName,
-        parameter,
-      };
-      const param = JSON.stringify(paramObj);
-      // try performing FM script.
-      try {
-        const { promise, intervalID } = fmOnReady_PerformScriptWithOption(
-          script,
-          param,
-          option
-        );
-        // store the interval id in the gofer promise so it can clear the interval
-        // if the custom timeout is exceeded
-        window.fmGofer.promises[promiseID].fmOnReadyIntervalID = intervalID;
-        await promise;
-      } catch (error) {
-        deletePromise(promiseID);
-        reject(error);
-      }
-    })
-  );
+  return new FMGPromise(async (resolve, reject) => {
+    initializeGofer();
+    // store resolve and reject for calling outside this scope
+    const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
+    const paramObj: GoferParam = {
+      promiseID,
+      callbackName,
+      parameter,
+    };
+    const param = JSON.stringify(paramObj);
+    // try performing FM script.
+    try {
+      const { promise, intervalID } = fmOnReady_PerformScriptWithOption(
+        script,
+        param,
+        option
+      );
+      // store the interval id in the gofer promise so it can clear the interval
+      // if the custom timeout is exceeded
+      window.fmGofer.promises[promiseID].fmOnReadyIntervalID = intervalID;
+      await promise;
+    } catch (error) {
+      deletePromise(promiseID);
+      reject(error);
+    }
+  });
 }
 
 /**
