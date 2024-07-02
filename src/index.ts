@@ -137,7 +137,7 @@ function fmOnReady_PerformScriptWithOption(
   };
 }
 
-// types to describe a vanilla JSON Object or Array as default generic type for FMGPromise
+// types to describe a JSON Object or Array as the default generic type for FMGPromise
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 interface JsonObject {
   [key: string]: JsonValue;
@@ -145,17 +145,18 @@ interface JsonObject {
 interface JsonArray extends Array<JsonValue> {}
 
 // Our custom promise type that adds a `json` method. Note, the json method
-// does not behave like fetch because you call it on the promise itself,
-// not the inner value of the resolved promise.
+// does not behave like fetch's json method because you call this on the promise itself,
+// not the inner value of the resolved promise like fetch.
 interface FMGPromise extends Promise<string> {
   json<U = JsonObject | JsonArray>(): Promise<U>;
 }
 
-// Function to convert a Promise<string> to a FMGPromise
+/// Converts a Promise<string> to a FMGPromise
 function toFMGPromise(promise: Promise<string>): FMGPromise {
   // Create a new object that inherits from the original promise
   const fmgPromise = Object.create(promise) as FMGPromise;
 
+  /// json method that parses the resolved string as JSON
   fmgPromise.json = function <U = JsonObject | JsonArray>() {
     return this.then((text: string) => JSON.parse(text) as U);
   };
@@ -275,7 +276,6 @@ declare global {
         option?: ScriptOption
       ) => void;
     };
-    // https://flutterq.com/no-index-signature-with-a-parameter-of-type-string-was-found-on-type/
     fmGofer: {
       promises: {
         [promiseID: string]: GoferPromise;
