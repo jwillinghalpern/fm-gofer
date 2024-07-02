@@ -17,9 +17,9 @@ interface FMGPromise<T = JsonObject | JsonArray> extends Promise<string> {
  * @param {ScriptOption} option script option between 0 and 5
  * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
- * @returns {Promise<string>} a promise that FileMaker can resolve or reject
+ * @returns {FMGPromise} a promise that FileMaker can resolve or reject
  */
-export declare function PerformScriptWithOption(script: string, parameter?: any, option?: ScriptOption, timeout?: number, timeoutMessage?: string): FMGPromise<string>;
+export declare function PerformScriptWithOption(script: string, parameter?: any, option?: ScriptOption, timeout?: number, timeoutMessage?: string): FMGPromise;
 /**
  * Perform a FileMaker Script. FM can return a result by resolving or rejecting
  * @function

@@ -144,21 +144,18 @@ interface JsonObject {
 }
 interface JsonArray extends Array<JsonValue> {}
 
-// TODO: should T = string since PerformScriptWithOption returns a FMGPromise by default?
 // Our custom promise type that adds a json method. Note, the json method does not behave like fetch because you call it on the promise itself, not the inner value of the resolved promise.
-interface FMGPromise<T = JsonObject | JsonArray> extends Promise<string> {
-  json<U = T>(): Promise<U>;
+interface FMGPromise extends Promise<string> {
+  json<U = JsonObject | JsonArray>(): Promise<U>;
 }
 
 // Function to convert a Promise<string> to a FMGPromise
-function toFMGPromise<T = JsonObject | JsonArray>(
-  promise: Promise<string>
-): FMGPromise<T> {
+function toFMGPromise(promise: Promise<string>): FMGPromise {
   // Create a new object that inherits from the original promise
-  const fmgPromise = Object.create(promise) as FMGPromise<T>;
+  const fmgPromise = Object.create(promise) as FMGPromise;
 
   // Add json method
-  fmgPromise.json = function <U = T>() {
+  fmgPromise.json = function <U = JsonObject | JsonArray>() {
     return this.then((text: string) => JSON.parse(text) as U);
   };
 
@@ -174,7 +171,7 @@ function toFMGPromise<T = JsonObject | JsonArray>(
  * @param {ScriptOption} option script option between 0 and 5
  * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
- * @returns {Promise<string>} a promise that FileMaker can resolve or reject
+ * @returns {FMGPromise} a promise that FileMaker can resolve or reject
  */
 export function PerformScriptWithOption(
   script: string,
@@ -182,7 +179,7 @@ export function PerformScriptWithOption(
   option?: ScriptOption,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
-): FMGPromise<string> {
+) {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
