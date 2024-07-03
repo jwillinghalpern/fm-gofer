@@ -5,7 +5,7 @@ interface JsonObject {
 }
 interface JsonArray extends Array<JsonValue> {
 }
-interface FMGPromise extends Promise<string> {
+export declare class FMGPromise extends Promise<string> {
     json<T = JsonObject | JsonArray>(): Promise<T>;
 }
 /**
