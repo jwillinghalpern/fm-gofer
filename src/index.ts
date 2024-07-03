@@ -144,7 +144,7 @@ interface JsonObject {
 }
 interface JsonArray extends Array<JsonValue> {}
 
-class FMGPromise extends Promise<string> {
+export class FMGPromise extends Promise<string> {
   json<T = JsonObject | JsonArray>() {
     return this.then((text: string) => JSON.parse(text) as T);
   }
