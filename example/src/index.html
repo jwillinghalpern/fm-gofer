@@ -1,57 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>fm-gofer example</title>
-    <!-- Scroll to the body for example usage -->
-    <link rel="stylesheet" href="index.css">
-    <script type="module">
-      import FMGofer, { Option } from '../../dist/fm-gofer'
-      window.FMGofer = FMGofer;
-    </script>
-  </head>
 
-  <body>
-    <button id="myButton">Click Me</button>
-    <div id="message" class="message">Click the button to get a message</div>
-    <div id="loader" class="loader" hidden>Loading...</div>
-    <script>
-      (function () {
-        function handleClick() {
-          var script = 'FM Script';
-          var param = 'HELLO FROM JS ' + new Date();
-          var timeout = 1000;
-          var timeoutMessage = 'Custom timeout message. The webviewer code elected to only wait for ' + timeout + 'ms.';
-          updateMessage('Waiting...');
-          showLoader();
-          FMGofer.PerformScriptWithOption(script, param, Option.Default, timeout, timeoutMessage)
-            .then(function (result) {
-              hideLoader();
-              updateMessage(result, '😍');
-            })
-            .catch(function (error) {
-              hideLoader();
-              updateMessage(error, '😵');
-            });
-        }
-        function showLoader() {
-          document.getElementById('loader').hidden = false;
-        }
-        function hideLoader() {
-          document.getElementById('loader').hidden = true;
-        }
-        function updateMessage(message, emoji) {
-          var html = message;
-          if (emoji) {
-            html += '<div style="font-size: 4rem;">' + emoji + '</div>';
-          }
-          document.getElementById('message').innerHTML = html;
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fm-gofer example</title>
+  <!-- Scroll to the body for example usage -->
+  <link rel="stylesheet" href="index.css">
+  <script type="module">
+    import FMGofer, { Option } from '../../dist/fm-gofer'
+    window.FMGofer = FMGofer;
+  </script>
+</head>
+
+<body>
+  <button id="myButton">Click Me</button>
+  <div id="message" class="message">Click the button to get a message</div>
+  <div id="loader" class="loader" hidden>Loading...</div>
+  <script>
+    (async function () {
+      async function handleClick() {
+        console.log('askForJson', askForJson)
+        const script = 'FM Script';
+        const param = 'HELLO FROM JS ' + new Date();
+        const timeout = 1000;
+        const timeoutMessage = 'Custom timeout message. The webviewer code elected to only wait for ' + timeout + 'ms.';
+        updateMessage('Waiting...');
+        showLoader();
+        FMGofer.PerformScriptWithOption(script, param, Option.Default, timeout, timeoutMessage)
+          .then(function (result) {
+            hideLoader();
+            updateMessage(result, '😍');
+          })
+          .catch(function (error) {
+            hideLoader();
+            updateMessage(error, '😵');
+          });
+      }
+      function showLoader() {
+        document.getElementById('loader').hidden = false;
+      }
+      function hideLoader() {
+        document.getElementById('loader').hidden = true;
+      }
+      function updateMessage(message, emoji) {
+        var html = message;
+        if (emoji) {
+          html += '<div style="font-size: 4rem;">' + emoji + '</div>';
         }
 
-        document.getElementById('myButton').onclick = handleClick;
-      })();
-    </script>
-  </body>
+      } else {
+        try {
+          const param = 'HELLO FROM JS ' + new Date();
+          const res = await FMGofer.PerformScript(script, param, timeout, timeoutMessage);
+          updateMessage(res, '😍');
+        } catch (error) {
+          updateMessage(error, '😵');
+        } finally {
+          hideLoader();
+        }
+      }
+    }
+      function showLoader() {
+      document.getElementById('loader').hidden = false;
+    }
+    function hideLoader() {
+      document.getElementById('loader').hidden = true;
+    }
+    function updateMessage(message, emoji) {
+      var html = message;
+      if (emoji) {
+        html += '<div style="font-size: 4rem;">' + emoji + '</div>';
+      }
+      document.getElementById('message').innerHTML = html;
+    }
+
+    document.getElementById('myButtonJSON').onclick = () => handleClick(true);
+    document.getElementById('myButton').onclick = () => handleClick(false);
+    }) ();
+  </script>
+</body>
+
 </html>

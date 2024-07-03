@@ -137,6 +137,19 @@ function fmOnReady_PerformScriptWithOption(
   };
 }
 
+// types to describe a JSON Object or Array as the default generic type for FMGPromise
+type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+interface JsonObject {
+  [key: string]: JsonValue;
+}
+interface JsonArray extends Array<JsonValue> {}
+
+export class FMGPromise extends Promise<string> {
+  json<T = JsonObject | JsonArray>() {
+    return this.then((text: string) => JSON.parse(text) as T);
+  }
+}
+
 /**
  * Perform a FileMaker Script with option. FM can return a result by resolving or rejecting
  * @function
@@ -146,7 +159,7 @@ function fmOnReady_PerformScriptWithOption(
  * @param {ScriptOption} option script option between 0 and 5
  * @param {number} [timeout=15000] timeout in ms. 0 will wait indefinitely.
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
- * @returns {Promise<string>} a promise that FileMaker can resolve or reject
+ * @returns {FMGPromise} a promise that FileMaker can resolve or reject
  */
 export function PerformScriptWithOption(
   script: string,
@@ -154,14 +167,14 @@ export function PerformScriptWithOption(
   option?: ScriptOption,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
-): Promise<string> {
+) {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
   if (typeof timeout !== 'number') throw new Error('timeout must be a number');
   if (typeof timeoutMessage !== 'string')
     throw new Error('timeoutMessage must be a string');
 
-  return new Promise(async (resolve, reject) => {
+  return new FMGPromise(async (resolve, reject) => {
     initializeGofer();
     // store resolve and reject for calling outside this scope
     const promiseID = storePromise(resolve, reject, timeout, timeoutMessage);
@@ -204,7 +217,7 @@ export function PerformScript(
   parameter: any = undefined,
   timeout: number = defaultTimeout,
   timeoutMessage: string = defaultTimeoutMessage
-): Promise<string> {
+): FMGPromise {
   const option = undefined;
   return PerformScriptWithOption(
     script,
@@ -261,7 +274,6 @@ declare global {
         option?: ScriptOption
       ) => void;
     };
-    // https://flutterq.com/no-index-signature-with-a-parameter-of-type-string-was-found-on-type/
     fmGofer: {
       promises: {
         [promiseID: string]: GoferPromise;
