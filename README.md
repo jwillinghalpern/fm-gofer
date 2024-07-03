@@ -74,8 +74,6 @@ const d = await FMGofer.PerformScriptWithOption(
   'timed out!'
 );
 
-// or set the timeout to zero to wait forever
-const e = await FMGofer.PerformScript('FM Script', param, 0);
 ```
 
 #### In your FileMaker script
