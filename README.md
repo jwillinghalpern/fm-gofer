@@ -74,6 +74,8 @@ const d = await FMGofer.PerformScriptWithOption(
   'timed out!'
 );
 
+// Or if you file returns JSON, you can use the json() method to parse the result
+const parsedData = await FMGofer.PerformScript('FM Script').json();
 ```
 
 #### In your FileMaker script
