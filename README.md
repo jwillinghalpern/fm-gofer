@@ -2,6 +2,8 @@
 
 Promises in FM Web Viewers!
 
+![FM Gofer](./readme-files/fm-gofer.png)
+
 It's like fetch() for FileMaker! Go'fer some data. Call FileMaker scripts from JavaScript in a web viewer and get the response back using async/await.
 
 ## Try it
