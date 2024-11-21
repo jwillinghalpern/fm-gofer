@@ -90,8 +90,8 @@ Set Variable [ $promiseID ; JSONGetElement ( Get(ScriptParameter) ; "promiseID" 
 # this contains param data sent from JS
 Set Variable [ $parameter ; JSONGetElement ( Get(ScriptParameter) ; "parameter" ) ]
 
-# callback to JS like: $callbackName($promiseID, <dataToReturn>, <trueToReject>)
-# (leave the third argument empty or False to indicate a success. Or set to True to indicate an error)
+# callback to JS like this:
+# (leave the third parameter slot empty or False to indicate a success. Or set to True to indicate an error)
 Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: $callbackName ; Parameters: $promiseID, 'Success! Hello from FM!' ]
 ```
 
