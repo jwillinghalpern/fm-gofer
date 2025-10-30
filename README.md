@@ -85,14 +85,19 @@ const parsedData = await FMGofer.PerformScript('FM Script').json();
 To return data to JS, extract `callbackName` and `promiseID` from `Get ( ScriptParameter )`, and use it to call back to JS and resolve/reject the promise. Pass `True` as the last param ("failed") to reject the promise.
 
 ```bash
-Set Variable [ $callbackName ; JSONGetElement ( Get(ScriptParameter) ; "callbackName" ) ]
-Set Variable [ $promiseID ; JSONGetElement ( Get(ScriptParameter) ; "promiseID" ) ]
+// NOTE: you can extract these as variables here or just use the provided custom functions to extract them
+// Set Variable [ $callbackName ; JSONGetElement ( Get(ScriptParameter) ; "callbackName" ) ]
+// Set Variable [ $callbackName ; FMGoferCallbackName ]
+// Set Variable [ $promiseID ; JSONGetElement ( Get(ScriptParameter) ; "promiseID" ) ]
+// Set Variable [ $promiseID ; FMGoferPromiseID ]
 # this contains param data sent from JS
 Set Variable [ $parameter ; JSONGetElement ( Get(ScriptParameter) ; "parameter" ) ]
+// Set Variable [ $parameter ; FMGoferParameter ]
 
 # callback to JS like this:
 # (leave the third parameter slot empty or False to indicate a success. Or set to True to indicate an error)
-Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: $callbackName ; Parameters: $promiseID, 'Success! Hello from FM!' ]
+# Notice how you can use the handy custom functions for the Callback name and Promise ID
+Perform JavaScript in Web Viewer [ Object Name: "myWebview" ; Function Name: FMGoferCallback ; Parameters: FMGoferPromiseID , 'Success! Hello from FM!' ]
 ```
 
 #### TypeScript support
