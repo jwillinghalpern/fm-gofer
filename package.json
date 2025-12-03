@@ -6,17 +6,17 @@
   "homepage": "https://github.com/jwillinghalpern/fm-gofer#readme",
   "issues": "https://github.com/jwillinghalpern/fm-gofer/issues",
   "source": "src/index.ts",
-  "main": "./dist/fm-gofer.umd.cjs",
-  "module": "./dist/fm-gofer.js",
-  "types": "dist/fm-gofer.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "browserslist": "defaults",
   "exports": {
     ".": {
-      "import": "./dist/fm-gofer.js",
-      "require": "./dist/fm-gofer.umd.cjs",
-      "default": "./dist/fm-gofer.js"
-    },
-    "./polyfill-ie11": "./dist/polyfill-ie11.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "files": [
     "dist"
@@ -35,7 +35,9 @@
     "test": "vitest",
     "test:verbose": "vitest --reporter verbose",
     "coverage": "vitest run --coverage",
-    "build": "vite build && tsc --emitDeclarationOnly && node scripts/rename-dts.js",
+    "build:old": "vite build && tsc --emitDeclarationOnly && node scripts/rename-dts.js",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "build:example": "vite build example/src --config ./vite.config.example.ts && touch example/dist/HTML_FOR_FM.txt || echo \"\\nbe sure to run 'npm run build' before running this script\n\""
   },
   "author": "Josh Willing Halpern <josh@willingapps.com>",
@@ -51,6 +53,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "jsdom": "^20.0.0",
     "prettier": "^2.7.1",
+    "tsup": "^8.5.1",
     "typescript": "^4.8.2",
     "vite": "^3.0.9",
     "vite-plugin-singlefile": "^0.11.1",

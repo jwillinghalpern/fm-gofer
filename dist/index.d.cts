@@ -5,7 +5,7 @@ interface JsonObject {
 }
 interface JsonArray extends Array<JsonValue> {
 }
-export declare class FMGPromise extends Promise<string> {
+declare class FMGPromise extends Promise<string> {
     json<T = JsonObject | JsonArray>(): Promise<T>;
 }
 /**
@@ -19,7 +19,7 @@ export declare class FMGPromise extends Promise<string> {
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {FMGPromise} a promise that FileMaker can resolve or reject
  */
-export declare function PerformScriptWithOption(script: string, parameter?: any, option?: ScriptOption, timeout?: number, timeoutMessage?: string): FMGPromise;
+declare function PerformScriptWithOption(script: string, parameter?: any, option?: ScriptOption, timeout?: number, timeoutMessage?: string): FMGPromise;
 /**
  * Perform a FileMaker Script. FM can return a result by resolving or rejecting
  * @function
@@ -30,8 +30,8 @@ export declare function PerformScriptWithOption(script: string, parameter?: any,
  * @param {string} [timeoutMessage='The FM script call timed out'] custom message if the call times out.
  * @returns {Promise<string>} a promise that FileMaker can resolve or reject
  */
-export declare function PerformScript(script: string, parameter?: any, timeout?: number, timeoutMessage?: string): FMGPromise;
-export declare const Option: {
+declare function PerformScript(script: string, parameter?: any, timeout?: number, timeoutMessage?: string): FMGPromise;
+declare const Option: {
     readonly Default: 0;
     readonly Continue: 0;
     readonly Halt: 1;
@@ -48,13 +48,13 @@ interface GoferPromise {
     timeoutID?: ReturnType<typeof setTimeout>;
     fmOnReadyIntervalID?: ReturnType<typeof setTimeout>;
 }
-export interface GoferParam {
+interface GoferParam {
     callbackName: typeof callbackName;
     promiseID: string;
     parameter: any;
 }
 declare type IsError = '1' | '0' | '' | boolean;
-export declare type GoferCallback = (promiseID: string, result?: string, // enforce string to emulate FM's behavior this will ensure that you remember to use JSON.parse() in any code that uses FMGofer.PerformScript*
+declare type GoferCallback = (promiseID: string, result?: string, // enforce string to emulate FM's behavior this will ensure that you remember to use JSON.parse() in any code that uses FMGofer.PerformScript*
 isError?: IsError) => void;
 declare global {
     interface Window {
@@ -75,4 +75,5 @@ declare const FMGofer: {
     PerformScript: typeof PerformScript;
     PerformScriptWithOption: typeof PerformScriptWithOption;
 };
-export { FMGofer as default };
+
+export { FMGPromise, type GoferCallback, type GoferParam, Option, PerformScript, PerformScriptWithOption, FMGofer as default };
