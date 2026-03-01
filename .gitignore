@@ -1,5 +1,6 @@
 .parcel-cache
 node_modules
+dist
 .nyc_output/*
 coverage
 # Output of 'npm pack'
