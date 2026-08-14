@@ -2,6 +2,9 @@
 node_modules
 .nyc_output/*
 coverage
+# library build output (regenerate with `npm run build`).
+# anchored so the prebuilt demo in example/dist/ stays tracked.
+/dist
 # Output of 'npm pack'
 *.tgz
 playground

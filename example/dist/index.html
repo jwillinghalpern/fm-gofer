@@ -2,89 +2,63 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fm-gofer example</title>
-  <!-- Scroll to the body for example usage -->
-  
-  
-  <script type="module" crossorigin>
-(function(){const r=document.createElement("link").relList;if(r&&r.supports&&r.supports("modulepreload"))return;for(const t of document.querySelectorAll('link[rel="modulepreload"]'))e(t);new MutationObserver(t=>{for(const i of t)if(i.type==="childList")for(const s of i.addedNodes)s.tagName==="LINK"&&s.rel==="modulepreload"&&e(s)}).observe(document,{childList:!0,subtree:!0});function n(t){const i={};return t.integrity&&(i.integrity=t.integrity),t.referrerpolicy&&(i.referrerPolicy=t.referrerpolicy),t.crossorigin==="use-credentials"?i.credentials="include":t.crossorigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function e(t){if(t.ep)return;t.ep=!0;const i=n(t);fetch(t.href,i)}})();const m="The FM script call timed out",a="fmGoferCallbackD7738642C91848E08720EAC24EDDA483";function x(){return"xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g,o=>{var r=Math.random()*16|0,n=o=="x"?r:r&3|8;return n.toString(16)})}function y(){return typeof window.fmGofer=="object"&&window.fmGofer!==null&&!Array.isArray(window.fmGofer)}function I(){y()||(window.fmGofer={promises:{},callbackName:a},window[a]=D)}function v(o,r,n,e){const t=x(),i={resolve:o,reject:r};return n!==0&&(i.timeoutID=setTimeout(()=>{i.fmOnReadyIntervalID&&clearInterval(i.fmOnReadyIntervalID),u(t),r(e)},n)),window.fmGofer.promises[t]=i,t}function h(o){return window.fmGofer.promises[o]}function u(o){var r,n;const e=(n=(r=window.fmGofer)==null?void 0:r.promises)==null?void 0:n[o];return e&&(e.timeoutID&&clearTimeout(e.timeoutID),e.fmOnReadyIntervalID&&clearInterval(e.fmOnReadyIntervalID)),delete window.fmGofer.promises[o]}function D(o,r,n){try{n==="0"&&(n="");const e=h(o);if(typeof e>"u")throw new Error(`No promise found for promiseID ${o}.`);e.timeoutID&&clearTimeout(e.timeoutID),n?e.reject(r):e.resolve(r),u(o)}catch(e){console.error(e)}}function g(o,r,n){let e;return{promise:new Promise((t,i)=>{if(typeof window.FileMaker=="object"){window.FileMaker.PerformScriptWithOption(o,r,n);return}const s=5,f=2e3;let c=0;e=setInterval(()=>{c+=s,c>f&&(clearInterval(e),i(`window.FileMaker not found within ${f} ms`)),typeof window.FileMaker=="object"&&(clearInterval(e),window.FileMaker.PerformScriptWithOption(o,r,n),t())},s)}),intervalID:e}}class b extends Promise{json(){return this.then(r=>JSON.parse(r))}}function d(o,r,n,e=0,t=m){if(typeof o!="string"||!o)throw new Error("script must be a string");if(typeof e!="number")throw new Error("timeout must be a number");if(typeof t!="string")throw new Error("timeoutMessage must be a string");return new b(async(i,s)=>{I();const f=v(i,s,e,t),c={promiseID:f,callbackName:a,parameter:r},w=JSON.stringify(c);try{const{promise:l,intervalID:p}=g(o,w,n);window.fmGofer.promises[f].fmOnReadyIntervalID=p,await l}catch(l){u(f),s(l)}})}function O(o,r=void 0,n=0,e=m){return d(o,r,void 0,n,e)}const G={PerformScript:O,PerformScriptWithOption:d};window.FMGofer=G;
-
-</script>
-  <style type="text/css">
-*{font-family:Arial,Helvetica,sans-serif;color:#fff;margin:10px;text-align:center}body{background-color:#223339}button{padding:10pt;font-size:medium;border:.5pt solid #007fb5;border-radius:5pt;background-color:#0091ce;color:#fff}button:active{background-color:#007cb1}.message{margin-top:10pt;margin-bottom:10pt;font-size:large}.loader{color:#9c9c9c;font-size:20px;margin:100px auto;width:1em;height:1em;border-radius:50%;position:relative;text-indent:-9999em;-webkit-animation:load4 1.3s infinite linear;animation:load4 1.3s infinite linear;-webkit-transform:translateZ(0);-ms-transform:translateZ(0);transform:translateZ(0)}@-webkit-keyframes load4{0%,to{box-shadow:0 -3em 0 .2em,2em -2em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em}12.5%{box-shadow:0 -3em,2em -2em 0 .2em,3em 0,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}25%{box-shadow:0 -3em 0 -.5em,2em -2em,3em 0 0 .2em,2em 2em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}37.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0,2em 2em 0 .2em,0 3em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}50%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em,0 3em 0 .2em,-2em 2em,-3em 0 0 -1em,-2em -2em 0 -1em}62.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em,-2em 2em 0 .2em,-3em 0,-2em -2em 0 -1em}75%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0 0 .2em,-2em -2em}87.5%{box-shadow:0 -3em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0,-2em -2em 0 .2em}}@keyframes load4{0%,to{box-shadow:0 -3em 0 .2em,2em -2em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em}12.5%{box-shadow:0 -3em,2em -2em 0 .2em,3em 0,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}25%{box-shadow:0 -3em 0 -.5em,2em -2em,3em 0 0 .2em,2em 2em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}37.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0,2em 2em 0 .2em,0 3em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}50%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em,0 3em 0 .2em,-2em 2em,-3em 0 0 -1em,-2em -2em 0 -1em}62.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em,-2em 2em 0 .2em,-3em 0,-2em -2em 0 -1em}75%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0 0 .2em,-2em -2em}87.5%{box-shadow:0 -3em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0,-2em -2em 0 .2em}}
-
-</style>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>fm-gofer example</title>
+	<!-- Scroll to the body for example usage -->
+  <script type="module" crossorigin>(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var e=`The FM script call timed out`,t=`fmGoferCallbackD7738642C91848E08720EAC24EDDA483`;function n(){return`xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx`.replace(/[xy]/g,e=>{var t=Math.random()*16|0;return(e===`x`?t:t&3|8).toString(16)})}function r(){return typeof window.fmGofer==`object`&&window.fmGofer!==null&&!Array.isArray(window.fmGofer)}function i(){r()||(window.fmGofer={promises:{},callbackName:t},window[t]=c)}function a(e,t,r,i){let a=n(),o={resolve:e,reject:t};return r!==0&&(o.timeoutID=setTimeout(()=>{o.fmOnReadyIntervalID&&clearInterval(o.fmOnReadyIntervalID),s(a),t(i)},r)),window.fmGofer.promises[a]=o,a}function o(e){return window.fmGofer.promises[e]}function s(e){let t=window.fmGofer?.promises?.[e];return t&&(t.timeoutID&&clearTimeout(t.timeoutID),t.fmOnReadyIntervalID&&clearInterval(t.fmOnReadyIntervalID)),delete window.fmGofer.promises[e]}function c(e,t,n){try{n===`0`&&(n=``);let r=o(e);if(r===void 0)throw Error(`No promise found for promiseID ${e}.`);r.timeoutID&&clearTimeout(r.timeoutID),n?r.reject(t):r.resolve(t),s(e)}catch(e){console.error(e)}}function l(e,t,n){let r;return{promise:new Promise((i,a)=>{if(typeof window.FileMaker==`object`){window.FileMaker.PerformScriptWithOption(e,t,n);return}let o=2e3,s=0;r=setInterval(()=>{s+=5,s>o&&(clearInterval(r),a(`window.FileMaker not found within ${o} ms`)),typeof window.FileMaker==`object`&&(clearInterval(r),window.FileMaker.PerformScriptWithOption(e,t,n),i())},5)}),intervalID:r}}var u=class extends Promise{json(){return this.then(e=>JSON.parse(e))}};function d(n,r,o,c=0,d=e){if(typeof n!=`string`||!n)throw Error(`script must be a string`);if(typeof c!=`number`)throw Error(`timeout must be a number`);if(typeof d!=`string`)throw Error(`timeoutMessage must be a string`);return new u(async(e,u)=>{i();let f=a(e,u,c,d),p=JSON.stringify({promiseID:f,callbackName:t,parameter:r});try{let{promise:e,intervalID:t}=l(n,p,o);window.fmGofer.promises[f].fmOnReadyIntervalID=t,await e}catch(e){s(f),u(e)}})}function f(t,n=void 0,r=0,i=e){return d(t,n,void 0,r,i)}window.FMGofer={PerformScript:f,PerformScriptWithOption:d},window.Option={Default:0,Continue:0,Halt:1,Exit:2,Resume:3,Pause:4,SuspendAndResume:5};</script>
+  <style rel="stylesheet" crossorigin>*{color:#fff;text-align:center;margin:10px;font-family:Arial,Helvetica,sans-serif}body{background-color:#223339}button{color:#fff;background-color:#0091ce;border:.5pt solid #007fb5;border-radius:5pt;padding:10pt;font-size:medium}button:active{background-color:#007cb1}.message{margin-top:10pt;margin-bottom:10pt;font-size:large}.loader{color:#9c9c9c;text-indent:-9999em;border-radius:50%;width:1em;height:1em;margin:100px auto;font-size:20px;animation:1.3s linear infinite load4;position:relative;transform:translateZ(0)}@keyframes load4{0%,to{box-shadow:0 -3em 0 .2em,2em -2em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em}12.5%{box-shadow:0 -3em,2em -2em 0 .2em,3em 0,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}25%{box-shadow:0 -3em 0 -.5em,2em -2em,3em 0 0 .2em,2em 2em,0 3em 0 -1em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}37.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0,2em 2em 0 .2em,0 3em,-2em 2em 0 -1em,-3em 0 0 -1em,-2em -2em 0 -1em}50%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em,0 3em 0 .2em,-2em 2em,-3em 0 0 -1em,-2em -2em 0 -1em}62.5%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em,-2em 2em 0 .2em,-3em 0,-2em -2em 0 -1em}75%{box-shadow:0 -3em 0 -1em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0 0 .2em,-2em -2em}87.5%{box-shadow:0 -3em,2em -2em 0 -1em,3em 0 0 -1em,2em 2em 0 -1em,0 3em 0 -1em,-2em 2em,-3em 0,-2em -2em 0 .2em}}
+/*$vite$:1*/</style>
 </head>
 
 <body>
-  <button id="myButton">Click Me</button>
-  <div id="message" class="message">Click the button to get a message</div>
-  <div id="loader" class="loader" hidden>Loading...</div>
-  <script>
-    (async function () {
-      async function handleClick() {
-        console.log('askForJson', askForJson)
-        const script = 'FM Script';
-        const param = 'HELLO FROM JS ' + new Date();
-        const timeout = 1000;
-        const timeoutMessage = 'Custom timeout message. The webviewer code elected to only wait for ' + timeout + 'ms.';
-        updateMessage('Waiting...');
-        showLoader();
-        FMGofer.PerformScriptWithOption(script, param, Option.Default, timeout, timeoutMessage)
-          .then(function (result) {
-            hideLoader();
-            updateMessage(result, '😍');
-          })
-          .catch(function (error) {
-            hideLoader();
-            updateMessage(error, '😵');
-          });
-      }
-      function showLoader() {
-        document.getElementById('loader').hidden = false;
-      }
-      function hideLoader() {
-        document.getElementById('loader').hidden = true;
-      }
-      function updateMessage(message, emoji) {
-        var html = message;
-        if (emoji) {
-          html += '<div style="font-size: 4rem;">' + emoji + '</div>';
-        }
+	<button type="button" id="myButton">Click Me</button>
+	<button type="button" id="myButtonJSON">Click Me (JSON)</button>
+	<div id="message" class="message">Click the button to get a message</div>
+	<div id="loader" class="loader" hidden>Loading...</div>
+	<script>
+		(() => {
+			async function handleClick(askForJson) {
+				const script = 'FM Script';
+				const param = askForJson ? "DEAR FM, PLEASE SEND JSON!" : `HELLO FROM JS ${new Date()}`;
+				const timeout = 1000;
+				const timeoutMessage = `Custom timeout message. The webviewer code elected to only wait for ${timeout}ms.`;
+				updateMessage('Waiting...');
+				showLoader();
+				try {
+					if (askForJson) {
+						// .json() parses FM's result, which FM always returns as text
+						const res = await FMGofer.PerformScript(script, param, timeout, timeoutMessage).json();
+						updateMessage(JSON.stringify(res, null, 2), '😍');
+					} else {
+						const res = await FMGofer.PerformScriptWithOption(script, param, Option.Default, timeout, timeoutMessage);
+						updateMessage(res, '😍');
+					}
+				} catch (error) {
+					updateMessage(error, '😵');
+				} finally {
+					hideLoader();
+				}
+			}
+			function showLoader() {
+				document.getElementById('loader').hidden = false;
+			}
+			function hideLoader() {
+				document.getElementById('loader').hidden = true;
+			}
+			function updateMessage(message, emoji) {
+				let html = message;
+				if (emoji) {
+					html += `<div style="font-size: 4rem;">${emoji}</div>`;
+				}
+				document.getElementById('message').innerHTML = html;
+			}
 
-      } else {
-        try {
-          const param = 'HELLO FROM JS ' + new Date();
-          const res = await FMGofer.PerformScript(script, param, timeout, timeoutMessage);
-          updateMessage(res, '😍');
-        } catch (error) {
-          updateMessage(error, '😵');
-        } finally {
-          hideLoader();
-        }
-      }
-    }
-      function showLoader() {
-      document.getElementById('loader').hidden = false;
-    }
-    function hideLoader() {
-      document.getElementById('loader').hidden = true;
-    }
-    function updateMessage(message, emoji) {
-      var html = message;
-      if (emoji) {
-        html += '<div style="font-size: 4rem;">' + emoji + '</div>';
-      }
-      document.getElementById('message').innerHTML = html;
-    }
-
-    document.getElementById('myButtonJSON').onclick = () => handleClick(true);
-    document.getElementById('myButton').onclick = () => handleClick(false);
-    }) ();
-  </script>
+			document.getElementById('myButtonJSON').onclick = () => handleClick(true);
+			document.getElementById('myButton').onclick = () => handleClick(false);
+		})();
+	</script>
 </body>
 
 </html>

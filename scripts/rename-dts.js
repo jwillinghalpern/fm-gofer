@@ -1,4 +1,4 @@
-import { rename } from 'fs'
+import { rename } from 'node:fs';
 
 rename('./dist/index.d.ts', './dist/fm-gofer.d.ts', (err) => {
   if (err) throw err;

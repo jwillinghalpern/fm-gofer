@@ -4,19 +4,24 @@
   "version": "1.11.0",
   "description": "Framework for calling FileMaker scripts from a webviewer and retrieving results using callback promises.",
   "homepage": "https://github.com/jwillinghalpern/fm-gofer#readme",
-  "issues": "https://github.com/jwillinghalpern/fm-gofer/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwillinghalpern/fm-gofer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jwillinghalpern/fm-gofer/issues"
+  },
   "source": "src/index.ts",
   "main": "./dist/fm-gofer.umd.cjs",
   "module": "./dist/fm-gofer.js",
   "types": "dist/fm-gofer.d.ts",
-  "browserslist": "defaults",
   "exports": {
     ".": {
+      "types": "./dist/fm-gofer.d.ts",
       "import": "./dist/fm-gofer.js",
       "require": "./dist/fm-gofer.umd.cjs",
       "default": "./dist/fm-gofer.js"
-    },
-    "./polyfill-ie11": "./dist/polyfill-ie11.js"
+    }
   },
   "files": [
     "dist"
@@ -32,28 +37,29 @@
     "fetch"
   ],
   "scripts": {
-    "test": "vitest",
-    "test:verbose": "vitest --reporter verbose",
-    "coverage": "vitest run --coverage",
-    "build": "vite build && tsc --emitDeclarationOnly && node scripts/rename-dts.js",
-    "build:example": "vite build example/src --config ./vite.config.example.ts && touch example/dist/HTML_FOR_FM.txt || echo \"\\nbe sure to run 'npm run build' before running this script\n\""
+    "dev": "vite",
+    "build": "vite build && tsc -p tsconfig.build.json && node scripts/rename-dts.js",
+    "build:example": "vite build --config ./vite.config.example.ts && touch example/dist/HTML_FOR_FM.txt || echo \"\\nbe sure to run 'npm run build' before running this script\n\"",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "prepare": "npm run build"
   },
   "author": "Josh Willing Halpern <josh@willingapps.com>",
   "license": "ISC",
-  "sourceType": "module",
   "sideEffects": false,
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+  },
   "devDependencies": {
-    "@vitest/coverage-c8": "^0.23.1",
-    "eslint": "^8.23.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "jsdom": "^20.0.0",
-    "prettier": "^2.7.1",
-    "typescript": "^4.8.2",
-    "vite": "^3.0.9",
-    "vite-plugin-singlefile": "^0.11.1",
-    "vitest": "^0.23.0"
+    "@biomejs/biome": "^2.5.8",
+    "@vitest/coverage-v8": "^4.1.10",
+    "jsdom": "^30.0.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1",
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^4.1.10"
   }
 }

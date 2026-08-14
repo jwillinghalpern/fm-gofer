@@ -11,7 +11,7 @@ function fmGoferUUID() {
   const template = 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx';
   return template.replace(/[xy]/g, (c) => {
     var r = (Math.random() * 16) | 0,
-      v = c == 'x' ? r : (r & 0x3) | 0x8;
+      v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -49,7 +49,7 @@ function storePromise(
   resolve: Function,
   reject: Function,
   timeout: number,
-  timeoutMessage: string
+  timeoutMessage: string,
 ) {
   const promiseID = fmGoferUUID();
   const promise: GoferPromise = { resolve, reject };
@@ -94,7 +94,7 @@ function runCallback(promiseID: string, result?: string, isError?: IsError) {
     if (typeof promise === 'undefined')
       throw new Error(`No promise found for promiseID ${promiseID}.`);
     if (promise.timeoutID) clearTimeout(promise.timeoutID);
-    if (!!isError) promise.reject(result);
+    if (isError) promise.reject(result);
     else promise.resolve(result);
     deletePromise(promiseID);
   } catch (error) {
@@ -105,9 +105,11 @@ function runCallback(promiseID: string, result?: string, isError?: IsError) {
 function fmOnReady_PerformScriptWithOption(
   script: string,
   param?: any,
-  option?: ScriptOption
+  option?: ScriptOption,
 ) {
-  let intervalID: ReturnType<typeof setInterval>;
+  // assigned inside the executor below, so it may still be unset when the
+  // early-return path (window.FileMaker already present) is taken
+  let intervalID: ReturnType<typeof setInterval> | undefined;
   const promise = new Promise<void>((resolve, reject) => {
     // check if window.FileMaker already exists
     if (typeof window.FileMaker === 'object') {
@@ -166,7 +168,7 @@ export function PerformScriptWithOption(
   parameter?: any,
   option?: ScriptOption,
   timeout: number = defaultTimeout,
-  timeoutMessage: string = defaultTimeoutMessage
+  timeoutMessage: string = defaultTimeoutMessage,
 ) {
   if (typeof script !== 'string' || !script)
     throw new Error('script must be a string');
@@ -189,7 +191,7 @@ export function PerformScriptWithOption(
       const { promise, intervalID } = fmOnReady_PerformScriptWithOption(
         script,
         param,
-        option
+        option,
       );
       // store the interval id in the gofer promise so it can clear the interval
       // if the custom timeout is exceeded
@@ -216,7 +218,7 @@ export function PerformScript(
   script: string,
   parameter: any = undefined,
   timeout: number = defaultTimeout,
-  timeoutMessage: string = defaultTimeoutMessage
+  timeoutMessage: string = defaultTimeoutMessage,
 ): FMGPromise {
   const option = undefined;
   return PerformScriptWithOption(
@@ -224,7 +226,7 @@ export function PerformScript(
     parameter,
     option,
     timeout,
-    timeoutMessage
+    timeoutMessage,
   );
 }
 
@@ -239,7 +241,7 @@ export const Option = {
 } as const;
 
 // then a function can use this to define its allowed types
-type Option = typeof Option[keyof typeof Option];
+type Option = (typeof Option)[keyof typeof Option];
 
 type ScriptOption = Option | '0' | '1' | '2' | '3' | '4' | '5';
 
@@ -260,7 +262,7 @@ type IsError = '1' | '0' | '' | boolean;
 export type GoferCallback = (
   promiseID: string,
   result?: string, // enforce string to emulate FM's behavior this will ensure that you remember to use JSON.parse() in any code that uses FMGofer.PerformScript*
-  isError?: IsError // even though fm can only return a string or undefined, I'm allowing boolean for convenience when using this library with fm-mock. It's much easier to pass true or false to simulate errors than '1' or '0'
+  isError?: IsError, // even though fm can only return a string or undefined, I'm allowing boolean for convenience when using this library with fm-mock. It's much easier to pass true or false to simulate errors than '1' or '0'
 ) => void;
 
 declare global {
@@ -271,7 +273,7 @@ declare global {
       PerformScriptWithOption: (
         scriptName: string,
         parameter?: string,
-        option?: ScriptOption
+        option?: ScriptOption,
       ) => void;
     };
     fmGofer: {
@@ -284,4 +286,5 @@ declare global {
 }
 
 const FMGofer = { PerformScript, PerformScriptWithOption };
+
 export { FMGofer as default };

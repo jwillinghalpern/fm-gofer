@@ -1,15 +1,15 @@
 import {
-  vi,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-  Mock,
   afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  vi,
 } from 'vitest';
 
-import FMGofer, { GoferParam, Option } from '../src/index';
+import FMGofer, { type GoferParam, Option } from '../src/index';
 
 vi.stubGlobal('FileMaker', {});
 
@@ -57,7 +57,7 @@ describe('PerformScript', () => {
     const arg2Parsed = JSON.parse(arg2);
     expect(arg2Parsed.promiseID).toEqual(expect.stringMatching(/[a-z]/));
     expect(arg2Parsed.callbackName).toEqual(
-      expect.stringContaining('fmGoferCallback')
+      expect.stringContaining('fmGoferCallback'),
     );
     expect(arg2Parsed.parameter).toBe(parameter);
     // first arg is custom fm script option
@@ -93,33 +93,33 @@ describe('PerformScriptWithOption', () => {
     const message = '{"hello": "world"}';
     const expected = JSON.parse(message);
     window.FileMaker.PerformScriptWithOption = vi.fn(
-      (script, param, option) => {
+      (_script, param, _option) => {
         // setTimeout emulates FM's asynchronous response
         setTimeout(() => {
           const { callbackName, promiseID }: GoferParam = JSON.parse(
-            param as string
+            param as string,
           );
           window[callbackName](promiseID, message);
         }, 10);
-      }
+      },
     );
     await expect(
-      FMGofer.PerformScriptWithOption('My Script').json()
+      FMGofer.PerformScriptWithOption('My Script').json(),
     ).resolves.toEqual(expected);
   });
 
   it('should resolve with message if FM calls back without error', async () => {
     const message = 'Thanks from FM';
     window.FileMaker.PerformScriptWithOption = vi.fn(
-      (script, param, option) => {
+      (_script, param, _option) => {
         // setTimeout emulates FM's asynchronous response
         setTimeout(() => {
           const { callbackName, promiseID }: GoferParam = JSON.parse(
-            param as string
+            param as string,
           );
           window[callbackName](promiseID, message);
         }, 10);
-      }
+      },
     );
     await expect(FMGofer.PerformScript('My Script')).resolves.toEqual(message);
   });
@@ -127,15 +127,15 @@ describe('PerformScriptWithOption', () => {
   it('should reject with message if FM calls back with error', async () => {
     const message = 'FM rejected the call!';
     window.FileMaker.PerformScriptWithOption = vi.fn(
-      (script, param, option) => {
+      (_script, param, _option) => {
         setTimeout(() => {
           const { callbackName, promiseID }: GoferParam = JSON.parse(
-            param as string
+            param as string,
           );
           const isError = true;
           window[callbackName](promiseID, message, isError);
         }, 10);
-      }
+      },
     );
     await expect(FMGofer.PerformScript('My Script')).rejects.toEqual(message);
   });
@@ -149,14 +149,14 @@ describe('PerformScriptWithOption', () => {
       // simulate a very slow response from FileMaker
       const timeoutMs = 1000 * 60 * 5; // 5 minutes. This should be longer than the default timeout.
       window.FileMaker.PerformScriptWithOption = vi.fn(
-        (script, param, option) => {
+        (_script, param, _option) => {
           setTimeout(() => {
             const { callbackName, promiseID }: GoferParam = JSON.parse(
-              param as string
+              param as string,
             );
             window[callbackName](promiseID, successMessage);
           }, timeoutMs);
-        }
+        },
       );
     });
     afterEach(() => {
@@ -176,7 +176,7 @@ describe('PerformScriptWithOption', () => {
         'My Script',
         '',
         customTimeout,
-        customTimeoutMessage
+        customTimeoutMessage,
       );
       // overtake the short custom timeout, but fm still hasn't responded
       // (remember we set it it to take 5 minutes)
@@ -196,8 +196,8 @@ describe('PerformScriptWithOption', () => {
           undefined,
           // @ts-expect-error
           'NaN',
-          'lkj'
-        )
+          'lkj',
+        ),
       ).toThrowError();
     });
 
@@ -210,8 +210,8 @@ describe('PerformScriptWithOption', () => {
           undefined,
           1000,
           // @ts-expect-error
-          timeoutMessage
-        )
+          timeoutMessage,
+        ),
       ).toThrowError();
     });
 
@@ -231,7 +231,7 @@ describe('PerformScriptWithOption', () => {
 
     it('should return a promise', () => {
       expect(FMGofer.PerformScriptWithOption('my script')).toBeInstanceOf(
-        Promise
+        Promise,
       );
     });
   });
@@ -270,7 +270,7 @@ describe('Wait for FM to be ready before calling', () => {
       'test param',
       3,
       2000,
-      'lkjf'
+      'lkjf',
     );
     vi.advanceTimersByTime(1000);
     // script should be queued but not called yet
@@ -293,7 +293,7 @@ describe('Wait for FM to be ready before calling', () => {
     const prom = FMGofer.PerformScriptWithOption(
       'test script',
       'test param',
-      3
+      3,
     );
     // window.FileMaker is not found within 2000ms
     vi.advanceTimersByTime(2100);
