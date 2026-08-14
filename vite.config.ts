@@ -13,6 +13,14 @@ export default defineConfig({
       fileName: (format) =>
         format === 'es' ? 'fm-gofer.js' : 'fm-gofer.umd.cjs',
     },
+    rollupOptions: {
+      output: {
+        // We intentionally ship named exports alongside a default. This is
+        // what `auto` already infers for the UMD build; stating it explicitly
+        // just silences the MIXED_EXPORTS advisory.
+        exports: 'named',
+      },
+    },
   },
   test: {
     environment: 'jsdom',
